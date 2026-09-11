@@ -1,4 +1,4 @@
-import type { Field } from '@sitecore-jss/sitecore-jss-nextjs';
+import type { Field } from '@sitecore-content-sdk/nextjs';
 
 export interface RouteFields {
   Title?: Field;

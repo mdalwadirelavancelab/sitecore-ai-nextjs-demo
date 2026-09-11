@@ -1,4 +1,4 @@
-import type { ComponentParams } from '@sitecore-jss/sitecore-jss-nextjs';
+import type { ComponentParams } from '@sitecore-content-sdk/nextjs';
 
 interface StyleResult {
   id?: string;
