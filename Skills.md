@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This file provides a starter-specific capability view for the **basic-nextjs** app. Use it with the repository skills map to quickly choose the correct implementation pattern for App Router, XM Cloud layout rendering, and editor-safe component work.
+This file provides a capability view for **sitecore-ai-nextjs-demo**, originally copied from Sitecore's **examples/basic-nextjs** starter. Use it with the repository skills map to quickly choose the correct implementation pattern for App Router, XM Cloud layout rendering, and editor-safe component work.
 
 ---
 

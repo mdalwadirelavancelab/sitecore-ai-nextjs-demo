@@ -1,9 +1,9 @@
 {
-  "name": "content-sdk-nextjs-app-router",
+  "name": "sitecore-ai-nextjs-demo",
   "version": "1.0.0",
   "private": true,
   "config": {
-    "appName": "content-sdk-nextjs-app-router",
+    "appName": "sitecore-ai-nextjs-demo",
     "graphQLEndpointPath": "/sitecore/api/graph/edge",
     "language": "en",
     "template": "nextjs"
