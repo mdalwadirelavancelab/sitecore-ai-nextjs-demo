@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { ComponentParams, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs';
+import { ComponentParams, ComponentRendering } from '@sitecore-content-sdk/nextjs';
 
 interface DsiPageSearchComponentProps {
   rendering: ComponentRendering & { params: ComponentParams };

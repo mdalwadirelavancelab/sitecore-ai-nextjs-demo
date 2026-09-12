@@ -1,3 +1,5 @@
+'use client';
+
 import React, { JSX, useRef, useState } from 'react';
 // import { ComponentProps } from 'lib/component-props';
 import {
@@ -5,7 +7,7 @@ import {
   RichText,
   ComponentParams,
   ComponentRendering,
-} from '@sitecore-jss/sitecore-jss-nextjs';
+} from '@sitecore-content-sdk/nextjs';
 import { getComponentStyles } from 'lib/DSI/Common/getComponentStyles';
 
 type ChildRenderingProps = {

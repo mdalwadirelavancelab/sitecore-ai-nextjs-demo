@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { ComponentParams, ComponentRendering, Field, ImageField, Image, RichText, Link, LinkField } from '@sitecore-jss/sitecore-jss-nextjs';
+import { ComponentParams, ComponentRendering, Field, ImageField, Image, RichText, Link, LinkField } from '@sitecore-content-sdk/nextjs';
 import { getComponentStyles } from 'lib/DSI/Common/getComponentStyles';
 
 interface DsiPromoCardComponentProps {
@@ -18,7 +18,7 @@ interface DsiPromoCardComponentProps {
     PromoText4: Field<string>;
     PromoImage4: ImageField;
     PromoLink4: LinkField;
-    PromoLinkAttributes: any
+    PromoLinkAttributes: unknown
   }
 }
 

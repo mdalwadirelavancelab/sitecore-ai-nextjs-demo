@@ -1,3 +1,5 @@
+'use client';
+
 import React, { JSX, MouseEvent } from 'react';
 import {
   Field,
@@ -8,7 +10,7 @@ import {
   LinkField,
   ComponentParams,
   ComponentRendering,
-} from '@sitecore-jss/sitecore-jss-nextjs';
+} from '@sitecore-content-sdk/nextjs';
 import { getComponentStyles } from 'lib/DSI/Common/getComponentStyles';
 import {
   getDsiCarouselBoolean,
@@ -55,7 +57,25 @@ export const Default = (props: DsiCarouselComponentProps): JSX.Element => {
   const slideDisplayTime = getDsiCarouselTimeout(props.params?.Timeout);
 
   // All interaction state lives in the shared React hook so Default and future variants can reuse it.
-  const carousel = useDsiCarousel({
+  const {
+    showPrevious,
+    showNext,
+    rootRef,
+    wrapperRef,
+    handleMouseEnter,
+    handleMouseLeave,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    handleTouchCancel,
+    activeIndex,
+    getSlideStyle,
+    slideInfoMinHeight,
+    handleNavigationFocus,
+    handleNavigationBlur,
+    goToSlide,
+    handleNavigationKeyDown,
+  } = useDsiCarousel({
     slideCount: slides.length,
     timeout: slideDisplayTime,
     pauseOnHover,
@@ -75,17 +95,17 @@ export const Default = (props: DsiCarouselComponentProps): JSX.Element => {
 
   const handlePrevious = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    carousel.showPrevious();
+    showPrevious();
   };
 
   const handleNext = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    carousel.showNext();
+    showNext();
   };
 
   return (
     <div
-      ref={carousel.rootRef}
+      ref={rootRef}
       className={`component dsi-carousel carousel ${styles}`}
       id={_id}
       data-timeout={slideDisplayTime}
@@ -96,21 +116,21 @@ export const Default = (props: DsiCarouselComponentProps): JSX.Element => {
       <div className="component-content">
         <div className="carousel-inner" id={carouselId}>
           <div
-            ref={carousel.wrapperRef}
+            ref={wrapperRef}
             className="wrapper"
-            onMouseEnter={carousel.handleMouseEnter}
-            onMouseLeave={carousel.handleMouseLeave}
-            onTouchStart={carousel.handleTouchStart}
-            onTouchMove={carousel.handleTouchMove}
-            onTouchEnd={carousel.handleTouchEnd}
-            onTouchCancel={carousel.handleTouchCancel}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onTouchCancel={handleTouchCancel}
           >
             <ul className="slides">
               {slides.map((item, index) => (
                 <li
                   key={index}
-                  className={`slide ${index === carousel.activeIndex ? 'active' : ''}`}
-                  style={carousel.getSlideStyle(index)}
+                  className={`slide ${index === activeIndex ? 'active' : ''}`}
+                  style={getSlideStyle(index)}
                 >
                   <div className="row">
                     <div className="component content col-12">
@@ -121,8 +141,8 @@ export const Default = (props: DsiCarouselComponentProps): JSX.Element => {
                         <div
                           className="slide-info"
                           style={
-                            carousel.slideInfoMinHeight
-                              ? { minHeight: `${carousel.slideInfoMinHeight}px` }
+                            slideInfoMinHeight
+                              ? { minHeight: `${slideInfoMinHeight}px` }
                               : undefined
                           }
                         >
@@ -144,8 +164,8 @@ export const Default = (props: DsiCarouselComponentProps): JSX.Element => {
             {navigationType !== 'none' && (
               <div
                 className="nav"
-                onFocusCapture={carousel.handleNavigationFocus}
-                onBlurCapture={carousel.handleNavigationBlur}
+                onFocusCapture={handleNavigationFocus}
+                onBlurCapture={handleNavigationBlur}
               >
                 {showsPreviousNext && (
                   <a
@@ -159,7 +179,7 @@ export const Default = (props: DsiCarouselComponentProps): JSX.Element => {
                 {showsSlideNavigation && (
                   <div className="nav-items">
                     {slides.map((_item, index) => {
-                      const isActive = index === carousel.activeIndex;
+                      const isActive = index === activeIndex;
                       return (
                         <div
                           key={index}
@@ -169,8 +189,8 @@ export const Default = (props: DsiCarouselComponentProps): JSX.Element => {
                           }`}
                           aria-current={isActive}
                           aria-label={`Show slide ${index + 1}`}
-                          onClick={() => carousel.goToSlide(index)}
-                          onKeyDown={(event) => carousel.handleNavigationKeyDown(event, index)}
+                          onClick={() => goToSlide(index)}
+                          onKeyDown={(event) => handleNavigationKeyDown(event, index)}
                         >
                           {showsNumbers ? index + 1 : null}
                         </div>

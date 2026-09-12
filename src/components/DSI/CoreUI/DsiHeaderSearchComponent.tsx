@@ -1,5 +1,7 @@
+'use client';
+
 import React, { JSX } from 'react';
-import { ComponentParams, ComponentRendering, Field, Text } from '@sitecore-jss/sitecore-jss-nextjs';
+import { ComponentParams, ComponentRendering, Field, Text } from '@sitecore-content-sdk/nextjs';
 import { getComponentStyles } from 'lib/DSI/Common/getComponentStyles';
 import { useDsiHeaderSearch } from 'lib/DSI/Common/useDsiHeaderSearch';
 
@@ -101,7 +103,7 @@ export const LiveSearch = (props: DsiHeaderSearchComponentProps): JSX.Element =>
         )}
 
         {!loading && !error && results.length === 0 && query && (
-          <div className="no-results mt-2 text-muted">No results found for "{query}".</div>
+          <div className="no-results mt-2 text-muted">No results found for &quot;{query}&quot;.</div>
         )}
       </div>
     </div>
@@ -163,7 +165,7 @@ export const SearchWithButton = (props: DsiHeaderSearchComponentProps): JSX.Elem
         )}
 
         {!loading && !error && results.length === 0 && query && (
-          <p>No results found for "{query}".</p>
+          <p>No results found for &quot;{query}&quot;.</p>
         )}
       </div>
     </div>

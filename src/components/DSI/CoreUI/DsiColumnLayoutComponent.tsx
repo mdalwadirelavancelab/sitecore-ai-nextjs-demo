@@ -1,10 +1,12 @@
 import React, { JSX } from 'react';
-import { ComponentParams, ComponentRendering, Placeholder } from '@sitecore-jss/sitecore-jss-nextjs';
+import { ComponentParams, ComponentRendering, Page, AppPlaceholder } from '@sitecore-content-sdk/nextjs';
+import componentMap from '.sitecore/component-map';
 import { getComponentStyles } from 'lib/DSI/Common/getComponentStyles';
 
 interface DsiColumnLayoutComponentProps {
   rendering: ComponentRendering & { params: ComponentParams };
   params: ComponentParams;
+  page: Page;
 }
 
 export const Default = (props: DsiColumnLayoutComponentProps): JSX.Element => {
@@ -17,7 +19,7 @@ export const Default = (props: DsiColumnLayoutComponentProps): JSX.Element => {
       <div className="component-content" style={backgroundStyle}>
         <div className="row">
           <div className="col-12 col-lg-12">
-            <Placeholder name="col-1" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-1" rendering={props.rendering} />
           </div>
         </div>
       </div>
@@ -35,10 +37,10 @@ export const TwoEqualColumn = (props: DsiColumnLayoutComponentProps): JSX.Elemen
       <div className="component-content" style={backgroundStyle}>
         <div className="row">
           <div className="col-12 col-lg-6">
-            <Placeholder name="col-1" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-1" rendering={props.rendering} />
           </div>
           <div className="col-12 col-lg-6">
-            <Placeholder name="col-2" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-2" rendering={props.rendering} />
           </div>
         </div>
       </div>
@@ -56,13 +58,13 @@ export const ThreeEqualColumn = (props: DsiColumnLayoutComponentProps): JSX.Elem
       <div className="component-content" style={backgroundStyle}>
         <div className="row">
           <div className="col-12 col-lg-4">
-            <Placeholder name="col-1" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-1" rendering={props.rendering} />
           </div>
           <div className="col-12 col-lg-4">
-            <Placeholder name="col-2" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-2" rendering={props.rendering} />
           </div>
           <div className="col-12 col-lg-4">
-            <Placeholder name="col-3" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-3" rendering={props.rendering} />
           </div>
         </div>
       </div>
@@ -80,16 +82,16 @@ export const Four_Equal_Column = (props: DsiColumnLayoutComponentProps): JSX.Ele
       <div className="component-content" style={backgroundStyle}>
         <div className="row">
           <div className="col-12 col-lg-3">
-            <Placeholder name="col-1" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-1" rendering={props.rendering} />
           </div>
           <div className="col-12 col-lg-3">
-            <Placeholder name="col-2" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-2" rendering={props.rendering} />
           </div>
           <div className="col-12 col-lg-3">
-            <Placeholder name="col-3" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-3" rendering={props.rendering} />
           </div>
           <div className="col-12 col-lg-3">
-            <Placeholder name="col-4" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-4" rendering={props.rendering} />
           </div>
         </div>
       </div>
@@ -107,10 +109,10 @@ export const TwoColumnFourEight = (props: DsiColumnLayoutComponentProps): JSX.El
       <div className="component-content" style={backgroundStyle}>
         <div className="row">
           <div className="col-12 col-lg-4">
-            <Placeholder name="col-1" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-1" rendering={props.rendering} />
           </div>
           <div className="col-12 col-lg-8">
-            <Placeholder name="col-2" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-2" rendering={props.rendering} />
           </div>
         </div>
       </div>
@@ -129,10 +131,10 @@ export const TwoColumnFiveSeven = (props: DsiColumnLayoutComponentProps): JSX.El
       <div className="component-content" style={backgroundStyle}>
         <div className="row">
           <div className="col-12 col-lg-5">
-            <Placeholder name="col-1" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-1" rendering={props.rendering} />
           </div>
           <div className="col-12 col-lg-7">
-            <Placeholder name="col-2" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-2" rendering={props.rendering} />
           </div>
         </div>
       </div>
@@ -150,10 +152,10 @@ export const TwoColumnThreeNine = (props: DsiColumnLayoutComponentProps): JSX.El
       <div className="component-content" style={backgroundStyle}>
         <div className="row">
           <div className="col-12 col-lg-3">
-            <Placeholder name="col-3" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-3" rendering={props.rendering} />
           </div>
           <div className="col-12 col-lg-9">
-            <Placeholder name="col-2" rendering={props.rendering} />
+            <AppPlaceholder page={props.page} componentMap={componentMap} name="col-2" rendering={props.rendering} />
           </div>
         </div>
       </div>

@@ -1,5 +1,7 @@
+'use client';
+
 import React, { CSSProperties, JSX, useEffect, useRef, useState } from 'react';
-import { Field, RichText, ComponentParams, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs';
+import { Field, RichText, ComponentParams, ComponentRendering } from '@sitecore-content-sdk/nextjs';
 import { getComponentStyles } from 'lib/DSI/Common/getComponentStyles';
 
 type ChildRenderingProps = {
@@ -65,26 +67,32 @@ function useAccordion(itemCount: number, options: AccordionOptions) {
   const [focusedItemIndex, setFocusedItemIndex] = useState<number | null>(null);
   const [hoveredItemIndex, setHoveredItemIndex] = useState<number | null>(null);
 
-  /**
-   * Reapply the CMS default when ExpandedByDefault changes or Sitecore changes
-   * the number of child items, including during an Experience Editor refresh.
-   */
-  useEffect(() => {
-    setOpenItemIndexes(getDefaultOpenItems(itemCount, expandedByDefault));
-  }, [expandedByDefault, itemCount]);
+  const [previousOptions, setPreviousOptions] = useState({
+    itemCount,
+    expandedByDefault,
+    canOpenMultiple,
+  });
 
-  /**
-   * If the CMS changes CanOpenMultiple to false while several items are open,
-   * keep the first open item and close the remaining items.
-   */
-  useEffect(() => {
-    if (canOpenMultiple) return;
-
+  // Apply CMS option changes before rendering children, without effect-driven resets.
+  if (
+    previousOptions.itemCount !== itemCount ||
+    previousOptions.expandedByDefault !== expandedByDefault ||
+    previousOptions.canOpenMultiple !== canOpenMultiple
+  ) {
+    const resetDefault =
+      previousOptions.itemCount !== itemCount ||
+      previousOptions.expandedByDefault !== expandedByDefault;
+    const restrictOpenItems = previousOptions.canOpenMultiple !== canOpenMultiple && !canOpenMultiple;
+    setPreviousOptions({ itemCount, expandedByDefault, canOpenMultiple });
     setOpenItemIndexes((currentIndexes) => {
-      if (currentIndexes.size <= 1) return currentIndexes;
-      return new Set([Math.min(...currentIndexes)]);
+      const nextIndexes = resetDefault
+        ? getDefaultOpenItems(itemCount, expandedByDefault)
+        : currentIndexes;
+      return restrictOpenItems && nextIndexes.size > 1
+        ? new Set([Math.min(...nextIndexes)])
+        : nextIndexes;
     });
-  }, [canOpenMultiple]);
+  }
 
   // Open or close an item according to the current CanOpenMultiple CMS value.
   const toggleItem = (index: number) => {

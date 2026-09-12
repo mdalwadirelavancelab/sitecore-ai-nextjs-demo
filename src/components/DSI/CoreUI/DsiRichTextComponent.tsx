@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { Field, RichText as JssRichText } from '@sitecore-jss/sitecore-jss-nextjs';
+import { Field, RichText as ContentSdkRichText } from '@sitecore-content-sdk/nextjs';
 import { getComponentStyles } from 'lib/DSI/Common/getComponentStyles';
 
 // --- Type Definitions ---
@@ -20,7 +20,7 @@ export const Default = (props: DsiRichTextComponentProps): JSX.Element => {
   const { id, styles, backgroundStyle } = getComponentStyles(params);
 
   const content = fields?.Text ? (
-    <JssRichText field={fields.Text} />
+    <ContentSdkRichText field={fields.Text} />
   ) : (
     <span className="is-empty-hint">Rich text</span>
   );

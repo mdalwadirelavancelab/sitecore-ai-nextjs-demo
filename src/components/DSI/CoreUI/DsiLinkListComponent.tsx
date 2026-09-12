@@ -1,5 +1,5 @@
 import { JSX } from 'react';
-import { Link as JssLink, Text, LinkField, TextField, ComponentParams, ComponentRendering, } from '@sitecore-jss/sitecore-jss-nextjs';
+import { Link as ContentSdkLink, Text, LinkField, TextField, ComponentParams, ComponentRendering, } from '@sitecore-content-sdk/nextjs';
 import { getComponentStyles } from 'lib/DSI/Common/getComponentStyles';
 
 /**
@@ -49,7 +49,7 @@ const DsiLinkListItem = ({ index, total, field }: LinkListItemProps) => {
   return (
     <li className={className}>
       <div className="field-link">
-        <JssLink field={field} />
+        <ContentSdkLink field={field} />
       </div>
     </li>
   );
@@ -101,7 +101,7 @@ export const Default = (props: DsiLinkListComponentProps): JSX.Element => {
 
 
 // import { JSX } from 'react';
-// import { ComponentParams, ComponentRendering } from '@sitecore-jss/sitecore-jss-nextjs';
+// import { ComponentParams, ComponentRendering } from '@sitecore-content-sdk/nextjs';
 
 // interface DsiLinkListComponentProps {
 //   rendering: ComponentRendering & { params: ComponentParams };

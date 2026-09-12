@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { ComponentParams, ComponentRendering, Field, ImageField, Image, LinkField, Text, } from '@sitecore-jss/sitecore-jss-nextjs';
+import { ComponentParams, ComponentRendering, Field, ImageField, Image, LinkField, Text, } from '@sitecore-content-sdk/nextjs';
 import { getComponentStyles } from 'lib/DSI/Common/getComponentStyles';
 
 interface DsiImageComponentProps {

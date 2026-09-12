@@ -1,11 +1,13 @@
+'use client';
+
 import React, { JSX, useState } from 'react';
 import {
   Link,
   LinkField,
   Text,
   TextField,
-  useSitecoreContext,
-} from '@sitecore-jss/sitecore-jss-nextjs';
+  useSitecore,
+} from '@sitecore-content-sdk/nextjs';
 import { useDsiNavigation } from 'lib/DSI/Common/useDsiNavigation';
 import type { DsiNavigationBehavior } from 'lib/DSI/Common/useDsiNavigation';
 
@@ -79,7 +81,7 @@ const getLinkField = (props: DsiNavigationComponentProps): LinkField => {
 // --- Navigation List Component (Recursive) ---
 
 const NavigationList = (props: NavigationListProps) => {
-  const { sitecoreContext } = useSitecoreContext();
+  const { page } = useSitecore();
   const { fields, relativeLevel, handleClick, itemKey, itemPath, navigationBehavior } = props;
   const hasChildren = fields.Children?.length > 0;
   const isActive = navigationBehavior.isItemActive(itemKey);
@@ -135,7 +137,7 @@ const NavigationList = (props: NavigationListProps) => {
       >
         <Link
           field={getLinkField(props)}
-          editable={sitecoreContext.pageEditing}
+          editable={page.mode.isEditing}
           onClick={handleClick}
         >
           {getNavigationText(props)}
@@ -159,7 +161,7 @@ const NavigationList = (props: NavigationListProps) => {
 
 const useNavigationLogic = (props: DsiNavigationComponentProps, enableDropdown: boolean) => {
   const [isOpenMenu, setIsOpenMenu] = useState(false);
-  const { sitecoreContext } = useSitecoreContext();
+  const { page } = useSitecore();
 
   const { params, fields } = props;
 
@@ -175,7 +177,7 @@ const useNavigationLogic = (props: DsiNavigationComponentProps, enableDropdown: 
   });
 
   const handleToggleMenu = (event?: React.MouseEvent<HTMLElement>, forceState?: boolean) => {
-    if (event && sitecoreContext?.pageEditing) {
+    if (event && page.mode.isEditing) {
       event.preventDefault();
     }
 
@@ -217,7 +219,7 @@ const useNavigationLogic = (props: DsiNavigationComponentProps, enableDropdown: 
     handleToggleMenu,
     topLevelItems,
     navigationBehavior,
-    sitecoreContext,
+    page,
   };
 };
 
