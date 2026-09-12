@@ -143,6 +143,24 @@ export const useDsiCarousel = ({
   const [transitionState, setTransitionState] = useState<TransitionState | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [slideInfoMinHeight, setSlideInfoMinHeight] = useState<number>();
+  const [previousSlideCount, setPreviousSlideCount] = useState(slideCount);
+  const [previousPauseOnHover, setPreviousPauseOnHover] = useState(pauseOnHover);
+
+  // Reconcile CMS option changes before rendering children, rather than in an effect.
+  if (previousSlideCount !== slideCount) {
+    setPreviousSlideCount(slideCount);
+    setTransitionState(null);
+    setActiveIndex((currentIndex) =>
+      slideCount > 0 ? Math.min(currentIndex, slideCount - 1) : 0
+    );
+  }
+
+  if (previousPauseOnHover !== pauseOnHover) {
+    setPreviousPauseOnHover(pauseOnHover);
+    if (!pauseOnHover) {
+      setIsPaused(false);
+    }
+  }
 
   /** Stops the current autoplay schedule and optionally remembers its elapsed time. */
   const descheduleSlide = useCallback((rememberElapsedTime: boolean) => {
@@ -211,7 +229,9 @@ export const useDsiCarousel = ({
   );
 
   // The autoplay callback always uses the newest slide count, index, and transition settings.
-  changeSlideByRef.current = changeSlideBy;
+  useEffect(() => {
+    changeSlideByRef.current = changeSlideBy;
+  }, [changeSlideBy]);
 
   /** Starts autoplay with any time remaining from a hover/focus pause. */
   const scheduleSlide = useCallback(() => {
@@ -270,7 +290,15 @@ export const useDsiCarousel = ({
     };
   }, [completeSlideChange, transitionState]);
 
-  // Schedule only when no transition is running; cleanup prevents duplicate timers.
+  // Synchronize imperative timer state after Sitecore changes datasource children.
+  useEffect(() => {
+    isTransitioningRef.current = false;
+    resetTimer();
+    activeIndexRef.current =
+      slideCount > 0 ? Math.min(activeIndexRef.current, slideCount - 1) : 0;
+  }, [resetTimer, slideCount]);
+
+  // Schedule after datasource synchronization so a cancelled transition cannot block autoplay.
   useEffect(() => {
     if (!transitionState) {
       scheduleSlide();
@@ -278,18 +306,6 @@ export const useDsiCarousel = ({
 
     return () => descheduleSlide(false);
   }, [activeIndex, descheduleSlide, scheduleSlide, transitionState]);
-
-  // Keep the active index valid if Sitecore adds or removes datasource children.
-  useEffect(() => {
-    isTransitioningRef.current = false;
-    setTransitionState(null);
-    resetTimer();
-    setActiveIndex((currentIndex) => {
-      const validIndex = slideCount > 0 ? Math.min(currentIndex, slideCount - 1) : 0;
-      activeIndexRef.current = validIndex;
-      return validIndex;
-    });
-  }, [resetTimer, slideCount]);
 
   // Keep the original custom event so any existing integration can still react to a change.
   useEffect(() => {
@@ -356,7 +372,6 @@ export const useDsiCarousel = ({
   useEffect(() => {
     if (!pauseOnHover) {
       pauseReasonsRef.current.clear();
-      setIsPaused(false);
     }
   }, [pauseOnHover]);
 

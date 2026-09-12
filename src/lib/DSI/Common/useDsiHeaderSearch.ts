@@ -133,12 +133,14 @@ export const useDsiHeaderSearch = ({
     minimumCharacters,
     search,
   });
-  liveSearchSettingsRef.current = {
-    debounceMilliseconds,
-    liveSearch,
-    minimumCharacters,
-    search,
-  };
+  useEffect(() => {
+    liveSearchSettingsRef.current = {
+      debounceMilliseconds,
+      liveSearch,
+      minimumCharacters,
+      search,
+    };
+  }, [debounceMilliseconds, liveSearch, minimumCharacters, search]);
 
   /**
    * Preserves the original debounce exactly: every query change waits 400 ms, and only the
