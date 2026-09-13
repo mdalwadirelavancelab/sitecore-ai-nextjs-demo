@@ -1,0 +1,104 @@
+// Adapted from the JSS shared Accordion stylesheet for the default vertical layout.
+// React owns expansion and animation; these rules supply presentation only.
+.component.accordion {
+  --accordion-border-color: #d2d2d2;
+  --accordion-icon-color: #747474;
+  --accordion-focus-color: #2563eb;
+
+  padding: 0;
+  margin-bottom: 10px;
+
+  > .component-content > div > .items {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    > .item {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      // The second selector also supports the legacy editor chrome wrapper.
+      > .toggle-header,
+      > .scEnabledChrome > .toggle-header {
+        position: relative;
+        cursor: pointer;
+        background-color: transparent;
+        border-bottom: 1px solid var(--accordion-border-color);
+
+        &:focus-visible {
+          outline: 2px solid var(--accordion-focus-color);
+          outline-offset: -2px;
+        }
+
+        .component {
+          margin-top: 0;
+        }
+
+        .field-heading {
+          font-size: 16px;
+          padding-left: 34px;
+          font-weight: 400;
+        }
+
+        > .label {
+          padding: 7px;
+          text-align: left;
+          display: block;
+          background: transparent;
+          position: relative;
+
+          // Plus/minus uses CSS lines instead of Font Awesome glyphs.
+          &::before,
+          &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            width: 16px;
+            height: 2px;
+            background-color: var(--accordion-icon-color);
+            pointer-events: none;
+          }
+
+          &::before {
+            transform: translateY(-50%);
+          }
+
+          &::after {
+            transform: translateY(-50%) rotate(90deg);
+          }
+        }
+
+        &[aria-expanded='true'] > .label::after {
+          display: none;
+        }
+      }
+
+      // Keep the two React animation wrappers and their inline styles intact.
+      > [aria-hidden] > div > .toggle-content {
+        padding: 10px;
+        background-color: transparent;
+
+        &::after {
+          content: '';
+          display: table;
+          clear: both;
+        }
+
+        .component {
+          margin-top: 0;
+        }
+      }
+    }
+  }
+}
+
+// Retained from the JSS stylesheet for legacy inline rich-text editing.
+.on-page-editor .component.accordion .toggle-content [scfieldtype='rich text'] {
+  display: block;
+}

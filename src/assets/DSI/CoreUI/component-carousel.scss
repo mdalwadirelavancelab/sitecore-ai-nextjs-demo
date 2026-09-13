@@ -1,0 +1,175 @@
+// Adapted from the JSS Carousel's default layout and navigation styles.
+// CSS replaces its Font Awesome arrows and site-specific player.png sprite.
+.component.dsi-carousel.carousel {
+  --carousel-border-color: #d2d2d2;
+  --carousel-background: #fff;
+  --carousel-control-color: #444;
+  --carousel-active-color: #2563eb;
+  --carousel-control-background: #f7f7f7;
+
+  position: relative;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--carousel-border-color);
+  text-align: center;
+  background: var(--carousel-background);
+
+  > .component-content > .carousel-inner > .wrapper {
+    > .slides {
+      position: relative;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+
+      &::after {
+        content: '';
+        display: block;
+        clear: both;
+      }
+
+      > .slide {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        // Neutralize Bootstrap gutters only on the Carousel's own wrappers.
+        > .row {
+          margin: 0;
+
+          > .component.content {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+          }
+        }
+
+        .field-slideimage img {
+          display: block;
+          max-width: 100%;
+          height: auto;
+          margin-inline: auto;
+        }
+
+        .slide-info {
+          padding: 10px;
+          overflow-wrap: anywhere;
+        }
+
+        .field-slidelink a {
+          font-weight: 700;
+          text-decoration: underline;
+          text-underline-offset: 3px;
+        }
+      }
+    }
+
+    > .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin: 10px 0 0;
+      padding: 0;
+
+      > .nav-items {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px;
+        min-width: 0;
+
+        > .sxa-bullets,
+        > .sxa-numbers {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          box-sizing: border-box;
+          width: 36px;
+          height: 36px;
+          color: var(--carousel-control-color);
+          cursor: pointer;
+
+          &:focus-visible {
+            outline: 2px solid var(--carousel-active-color);
+            outline-offset: -2px;
+          }
+        }
+
+        > .sxa-bullets::before {
+          content: '';
+          width: 10px;
+          height: 10px;
+          border: 1px solid var(--carousel-control-color);
+          border-radius: 50%;
+          background: var(--carousel-background);
+        }
+
+        > .sxa-bullets.active::before,
+        > .sxa-bullets:hover::before {
+          border-color: var(--carousel-active-color);
+          background: var(--carousel-active-color);
+        }
+
+        > .sxa-numbers {
+          border: 1px solid var(--carousel-border-color);
+          border-radius: 4px;
+          background: var(--carousel-control-background);
+
+          &.active {
+            border-color: var(--carousel-active-color);
+            color: var(--carousel-active-color);
+            font-weight: 700;
+          }
+
+          &:hover {
+            border-color: var(--carousel-active-color);
+          }
+        }
+      }
+
+      > .prev-text,
+      > .next-text {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 36px;
+        width: 36px;
+        height: 36px;
+        border: 1px solid var(--carousel-border-color);
+        border-radius: 4px;
+        background: var(--carousel-control-background);
+        color: var(--carousel-control-color);
+        text-decoration: none;
+
+        &::after {
+          content: '';
+          width: 9px;
+          height: 9px;
+          border-top: 2px solid currentColor;
+          border-right: 2px solid currentColor;
+        }
+
+        &:hover {
+          border-color: var(--carousel-active-color);
+          color: var(--carousel-active-color);
+        }
+
+        &:focus-visible {
+          outline: 2px solid var(--carousel-active-color);
+          outline-offset: 2px;
+        }
+      }
+
+      > .prev-text::after {
+        transform: translateX(2px) rotate(-135deg);
+      }
+
+      > .next-text::after {
+        transform: translateX(-2px) rotate(45deg);
+      }
+    }
+  }
+}

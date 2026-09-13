@@ -1,0 +1,107 @@
+// Adapted from the JSS tab styles for the default horizontal layout.
+// React controls selection and keyboard interaction.
+.component.tabs {
+  --tabs-accent-color: #89c6cc;
+  --tabs-border-color: #d2d2d2;
+  --tabs-background: #f7f7f7;
+  --tabs-active-background: #fff;
+  --tabs-text-color: #222;
+  --tabs-focus-color: #2563eb;
+
+  position: relative;
+  min-width: 0;
+  background: none;
+  border: none;
+
+  > .component-content > .tabs > .tabs-inner {
+    > .tabs-heading {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+
+      > .tab {
+        display: block;
+        min-width: 0;
+        margin: 0;
+        padding: 0;
+        border: 1px solid var(--tabs-background);
+        border-top-width: 2px;
+        border-bottom-color: var(--tabs-accent-color);
+        background: var(--tabs-background);
+        color: var(--tabs-text-color);
+        cursor: pointer;
+
+        > div {
+          padding: 3px 10px;
+        }
+
+        .component.content {
+          margin: 5px 0;
+        }
+
+        .field-heading {
+          font-size: 16px;
+          overflow-wrap: anywhere;
+
+          > :first-child {
+            margin-top: 0;
+          }
+
+          > :last-child {
+            margin-bottom: 0;
+          }
+        }
+
+        &.active {
+          border-color: var(--tabs-border-color);
+          border-top-color: var(--tabs-accent-color);
+          border-bottom-color: var(--tabs-accent-color);
+          background: var(--tabs-active-background);
+        }
+
+        &:hover {
+          border-top-color: var(--tabs-accent-color);
+          background: var(--tabs-active-background);
+        }
+
+        &:focus-visible {
+          outline: 2px solid var(--tabs-focus-color);
+          outline-offset: -2px;
+        }
+      }
+    }
+
+    > .tabs-container {
+      margin-top: -1px;
+      border-top: 1px solid var(--tabs-accent-color);
+
+      // Both headings and panels have the class "tab"; hide panels only.
+      > .tab {
+        display: none;
+        padding: 15px;
+        border: 1px solid var(--tabs-border-color);
+        overflow-wrap: anywhere;
+
+        &.active:not([hidden]) {
+          display: block;
+        }
+
+        &:focus-visible {
+          outline: 2px solid var(--tabs-focus-color);
+          outline-offset: -2px;
+        }
+
+        > :first-child {
+          margin-top: 0;
+        }
+
+        > :last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
