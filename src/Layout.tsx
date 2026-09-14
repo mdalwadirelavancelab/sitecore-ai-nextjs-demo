@@ -21,6 +21,12 @@ export interface RouteFields {
   ogDescription?: Field;
   ogImage?: ImageField;
   thumbnailImage?: ImageField;
+
+  tweetTitle?: Field<string>;
+  tweetDescription?: Field<string>;
+  tweetSite?: Field<string>;
+  tweetImage?: ImageField;
+  tweetCardType?: Field<string>;
 }
 
 const Layout = ({ page }: LayoutProps): JSX.Element => {

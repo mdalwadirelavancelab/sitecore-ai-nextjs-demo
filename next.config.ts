@@ -4,7 +4,7 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const nextConfig: NextConfig = {
   // Allow specifying a distinct distDir when concurrently running app in a container
   distDir: process.env.NEXTJS_DIST_DIR || '.next',
-  
+
   // Enable React Strict Mode
   reactStrictMode: true,
 
@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
     // Disable image optimization in development to avoid upstream timeouts
     unoptimized: process.env.NODE_ENV === 'development',
   },
-  
+
   // use this configuration to serve the sitemap.xml and robots.txt files from the API route handlers
   rewrites: async () => {
     return [
@@ -69,6 +69,11 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
+  // Custom setting: wait for metadata so its tags appear in <head> for everyone.
+  // Without this, Next.js may send metadata later and add its tags to <body>.
+  // This can make the page take longer to start loading.
+  htmlLimitedBots: /.*/,
 };
 
 const withNextIntl = createNextIntlPlugin();

@@ -73,8 +73,8 @@ export const generateStaticParams = async () => {
     const defaultSite = scConfig.defaultSite;
     const allowedSites = defaultSite
       ? sites
-          .filter((site: SiteInfo) => site.name === defaultSite)
-          .map((site: SiteInfo) => site.name)
+        .filter((site: SiteInfo) => site.name === defaultSite)
+        .map((site: SiteInfo) => site.name)
       : sites.map((site: SiteInfo) => site.name);
     return await client.getAppRouterStaticParams(
       allowedSites,
@@ -100,16 +100,11 @@ export const generateMetadata = async ({ params }: PageProps) => {
 
   // Parse keywords from comma-separated string to array
   const keywordsString = fields?.metadataKeywords?.value?.toString() || "";
-  const keywords = keywordsString
-    ? keywordsString.split(",").map((k: string) => k.trim())
-    : [];
+  const keywords = keywordsString ? keywordsString.split(",").map((k: string) => k.trim()) : [];
 
   return {
-    title: fields?.Title?.value?.toString() || "Page",
-    description:
-      fields?.ogDescription?.value?.toString() ||
-      fields?.metadataDescription?.value?.toString() ||
-      "Sitecore Next.js Basic Example",
+    title: fields?.Title?.value?.toString() || "",
+    description: fields?.metadataDescription?.value?.toString() || "",
     keywords,
     ...(canonicalUrl && {
       alternates: {
@@ -117,13 +112,17 @@ export const generateMetadata = async ({ params }: PageProps) => {
       },
     }),
     openGraph: {
-      title: fields?.ogTitle?.value?.toString() || "Page",
-      description:
-        fields?.ogDescription?.value?.toString() ||
-        fields?.metadataDescription?.value?.toString() ||
-        "Sitecore Next.js Basic Example",
+      title: fields?.ogTitle?.value?.toString() || "",
+      description: fields?.ogDescription?.value?.toString() || "",
       url: canonicalUrl,
       images: fields?.ogImage?.value?.src || fields?.thumbnailImage?.value?.src,
+    },
+    twitter: {
+      card: fields?.tweetCardType?.value === "summary" ? "summary" : "summary_large_image",
+      title: fields?.tweetTitle?.value || "",
+      description: fields?.tweetDescription?.value || "",
+      site: fields?.tweetSite?.value || "",
+      images: fields?.tweetImage?.value?.src || "",
     },
   };
 };
