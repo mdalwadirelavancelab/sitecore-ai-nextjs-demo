@@ -1,4 +1,5 @@
 import './globals.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import '../assets/DSI/CoreUI/index.scss';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
