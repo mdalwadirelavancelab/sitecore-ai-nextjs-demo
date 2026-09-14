@@ -17,6 +17,7 @@ import * as DsiPlainHTMLComponent from 'src/components/DSI/CoreUI/DsiPlainHTMLCo
 import * as DsiPageSearchComponent from 'src/components/DSI/CoreUI/DsiPageSearchComponent';
 import * as DsiNavigationComponent from 'src/components/DSI/CoreUI/DsiNavigationComponent';
 import * as DsiLinkListComponent from 'src/components/DSI/CoreUI/DsiLinkListComponent';
+import * as DsiLinkComponent from 'src/components/DSI/CoreUI/DsiLinkComponent';
 import * as DsiImageComponent from 'src/components/DSI/CoreUI/DsiImageComponent';
 import * as DsiIconCardComponent from 'src/components/DSI/CoreUI/DsiIconCardComponent';
 import * as DsiHeroComponent from 'src/components/DSI/CoreUI/DsiHeroComponent';
@@ -40,6 +41,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['DsiPageSearchComponent', { ...DsiPageSearchComponent }],
   ['DsiNavigationComponent', { ...DsiNavigationComponent, componentType: 'client' }],
   ['DsiLinkListComponent', { ...DsiLinkListComponent }],
+  ['DsiLinkComponent', { ...DsiLinkComponent }],
   ['DsiImageComponent', { ...DsiImageComponent }],
   ['DsiIconCardComponent', { ...DsiIconCardComponent }],
   ['DsiHeroComponent', { ...DsiHeroComponent }],
