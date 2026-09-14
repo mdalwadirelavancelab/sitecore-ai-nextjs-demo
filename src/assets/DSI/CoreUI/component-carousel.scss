@@ -1,5 +1,5 @@
 // Adapted from the JSS Carousel's default layout and navigation styles.
-// CSS replaces its Font Awesome arrows and site-specific player.png sprite.
+// Shared player sprite supplies navigation decoration; CSS supplies the chevrons.
 .component.dsi-carousel.carousel {
   --carousel-border-color: #d2d2d2;
   --carousel-background: #fff;
@@ -15,7 +15,31 @@
   text-align: center;
   background: var(--carousel-background);
 
+  .carousel-editing-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 220px;
+    padding: 20px;
+    border: 1px dashed var(--carousel-border-color);
+    background: var(--carousel-control-background);
+    color: var(--carousel-control-color);
+
+    img {
+      width: 140px;
+      max-width: 100%;
+      height: auto;
+    }
+
+    p {
+      margin: 12px 0 0;
+    }
+  }
+
   > .component-content > .carousel-inner > .wrapper {
+    padding-bottom: 30px;
+
     > .slides {
       position: relative;
       margin: 0;
@@ -70,16 +94,43 @@
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
-      gap: 8px;
+      gap: 0;
       margin: 10px 0 0;
       padding: 0;
 
       > .nav-items {
+        position: relative;
         display: flex;
-        flex-wrap: wrap;
         justify-content: center;
-        gap: 4px;
-        min-width: 0;
+        min-width: 20px;
+        height: 32px;
+        margin: 0 15px;
+
+        &:empty {
+          display: none;
+        }
+
+        &::before,
+        &::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          width: 9px;
+          height: 32px;
+          pointer-events: none;
+          background-image: url('/DSI/CoreUI/images/player.png');
+          background-repeat: no-repeat;
+        }
+
+        &::before {
+          left: -9px;
+          background-position: -154px -152px;
+        }
+
+        &::after {
+          right: -9px;
+          background-position: -225px -152px;
+        }
 
         > .sxa-bullets,
         > .sxa-numbers {
@@ -87,8 +138,10 @@
           align-items: center;
           justify-content: center;
           box-sizing: border-box;
-          width: 36px;
-          height: 36px;
+          position: relative;
+          flex: 0 0 20px;
+          width: 20px;
+          height: 32px;
           color: var(--carousel-control-color);
           cursor: pointer;
 
@@ -100,32 +153,25 @@
 
         > .sxa-bullets::before {
           content: '';
-          width: 10px;
-          height: 10px;
-          border: 1px solid var(--carousel-control-color);
-          border-radius: 50%;
-          background: var(--carousel-background);
+          width: 20px;
+          height: 32px;
+          background: url('/DSI/CoreUI/images/player.png') no-repeat 0 -152px;
         }
 
         > .sxa-bullets.active::before,
         > .sxa-bullets:hover::before {
-          border-color: var(--carousel-active-color);
-          background: var(--carousel-active-color);
+          background-position: -75px -152px;
         }
 
         > .sxa-numbers {
-          border: 1px solid var(--carousel-border-color);
-          border-radius: 4px;
-          background: var(--carousel-control-background);
+          background: linear-gradient(to bottom, #eee 0%, #efefef 3%, #fbfbfb 16%, #fefefe 22%, #fff 34%, #fdfdfd 41%, #f7f7f7 50%, #e8e8e8 66%, #d5d5d5 78%, #cecece 84%, rgba(13, 15, 17, .44) 88%, rgba(13, 15, 17, .3) 94%, rgba(13, 15, 17, .12) 100%);
 
           &.active {
-            border-color: var(--carousel-active-color);
-            color: var(--carousel-active-color);
             font-weight: 700;
           }
 
           &:hover {
-            border-color: var(--carousel-active-color);
+            color: #878787;
           }
         }
       }
@@ -138,23 +184,19 @@
         flex: 0 0 36px;
         width: 36px;
         height: 36px;
-        border: 1px solid var(--carousel-border-color);
-        border-radius: 4px;
-        background: var(--carousel-control-background);
-        color: var(--carousel-control-color);
+        color: #000;
         text-decoration: none;
 
         &::after {
           content: '';
-          width: 9px;
-          height: 9px;
-          border-top: 2px solid currentColor;
-          border-right: 2px solid currentColor;
+          width: 14px;
+          height: 14px;
+          border-top: 3px solid currentColor;
+          border-right: 3px solid currentColor;
         }
 
         &:hover {
-          border-color: var(--carousel-active-color);
-          color: var(--carousel-active-color);
+          color: #878787;
         }
 
         &:focus-visible {

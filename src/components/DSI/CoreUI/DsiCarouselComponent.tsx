@@ -10,6 +10,7 @@ import {
   LinkField,
   ComponentParams,
   ComponentRendering,
+  useSitecore,
 } from '@sitecore-content-sdk/nextjs';
 import { getComponentStyles } from 'lib/DSI/Common/getComponentStyles';
 import {
@@ -45,6 +46,8 @@ interface DsiCarouselComponentProps {
 }
 
 export const Default = (props: DsiCarouselComponentProps): JSX.Element => {
+  const { page } = useSitecore();
+  const isEditing = page.mode.isEditing;
   const { id, styles } = getComponentStyles(props.params);
   const carouselId = id || `carousel-${props.rendering.uid}`;
   const _id = id || props.rendering.uid;
@@ -125,6 +128,15 @@ export const Default = (props: DsiCarouselComponentProps): JSX.Element => {
             onTouchEnd={handleTouchEnd}
             onTouchCancel={handleTouchCancel}
           >
+            {isEditing && slides.length === 0 && (
+              <div className="carousel-editing-placeholder">
+                <Image
+                  field={{ value: { src: '/DSI/CoreUI/images/default-image.svg', alt: '' } }}
+                  editable={false}
+                />
+                <p>Carousel — select a datasource and add slides.</p>
+              </div>
+            )}
             <ul className="slides">
               {slides.map((item, index) => (
                 <li
@@ -136,6 +148,15 @@ export const Default = (props: DsiCarouselComponentProps): JSX.Element => {
                     <div className="component content col-12">
                       <div className="component-content">
                         <div className="field-slideimage">
+                          {isEditing && !item.fields.SlideImage?.value?.src && (
+                            <div className="carousel-editing-placeholder">
+                              <Image
+                                field={{ value: { src: '/DSI/CoreUI/images/default-image.svg', alt: '' } }}
+                                editable={false}
+                              />
+                              <p>Carousel slide — select an image.</p>
+                            </div>
+                          )}
                           <Image field={item.fields.SlideImage} />
                         </div>
                         <div
@@ -161,7 +182,7 @@ export const Default = (props: DsiCarouselComponentProps): JSX.Element => {
             </ul>
 
             {/* Keep the Sitecore SXA navigation classes so all existing Carousel CSS still applies. */}
-            {navigationType !== 'none' && (
+            {navigationType !== 'none' && !(isEditing && slides.length === 0) && (
               <div
                 className="nav"
                 onFocusCapture={handleNavigationFocus}
