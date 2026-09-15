@@ -1,6 +1,6 @@
 'use client';
 
-import React, { JSX, useState } from 'react';
+import React, { JSX, useId, useRef, useState } from 'react';
 import {
   Link,
   LinkField,
@@ -40,6 +40,7 @@ type NavigationListProps = DsiNavigationComponentProps & {
   itemKey: string;
   itemPath: string[];
   navigationBehavior: DsiNavigationBehavior;
+  withSubmenuButtons?: boolean;
 };
 
 // --- Helper Functions ---
@@ -98,6 +99,12 @@ const NavigationList = (props: NavigationListProps) => {
   const hasChildren = fields.Children?.length > 0;
   const isActive = navigationBehavior.isItemActive(itemKey);
   const isShown = navigationBehavior.isItemShown(itemKey);
+  const submenuId = useId();
+  // #region DSI navigation - single Tab stop in the button variant
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const itemRef = useRef<HTMLLIElement>(null);
+  const withSubmenuButtons = props.withSubmenuButtons ?? false;
+  // #endregion DSI navigation - single Tab stop in the button variant
 
   // xa.navigation.js added these SXA classes after rendering. React now calculates them
   // from the Sitecore navigation tree so the existing CSS continues to work unchanged.
@@ -109,7 +116,9 @@ const NavigationList = (props: NavigationListProps) => {
     ...(fields.Styles || []),
     `rel-level${relativeLevel}`,
     isActive ? 'active' : '',
+    isActive ? 'is-expanded' : '',
     isShown ? 'show' : '',
+    keyboardOpen ? 'keyboard-open' : '',
     isSubmenu ? 'submenu' : '',
     isWideNavigation ? 'wide-nav' : '',
     hasChildren ? '' : 'no-child',
@@ -131,13 +140,26 @@ const NavigationList = (props: NavigationListProps) => {
           itemKey={childKey}
           itemPath={[...itemPath, childKey]}
           navigationBehavior={navigationBehavior}
+          withSubmenuButtons={withSubmenuButtons}
         />
       );
     })
     : null;
 
   return (
-    <li className={classNameList} tabIndex={0}>
+    <li ref={itemRef} className={classNameList}
+      onKeyDown={(event) => {
+        if (withSubmenuButtons && hasChildren && event.key === 'Escape') {
+          event.preventDefault();
+          event.stopPropagation();
+          itemRef.current?.querySelector<HTMLAnchorElement>(':scope > .navigation-title > a')?.focus();
+          setKeyboardOpen(false);
+          navigationBehavior.handleNavigationKeyDown(event);
+        }
+      }}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setKeyboardOpen(false);
+      }}>
       <div
         className={`navigation-title field-navigationtitle ${hasChildren ? 'child' : ''}`}
         onMouseEnter={() => navigationBehavior.handleItemMouseEnter(itemPath, relativeLevel)}
@@ -150,7 +172,19 @@ const NavigationList = (props: NavigationListProps) => {
         <Link
           field={getLinkField(props)}
           editable={page.mode.isEditing}
-          // onClick={handleClick}
+          aria-expanded={withSubmenuButtons && hasChildren ? keyboardOpen || isActive || isShown : undefined}
+          aria-controls={withSubmenuButtons && hasChildren ? submenuId : undefined}
+          onFocus={withSubmenuButtons && hasChildren ? () => setKeyboardOpen(true) : undefined}
+          onKeyDown={withSubmenuButtons && hasChildren ? (event) => {
+            // Keep Enter's normal link behavior. Down opens children for every URL type.
+            if (event.key === 'ArrowDown') {
+              event.preventDefault();
+              setKeyboardOpen(true);
+              requestAnimationFrame(() => {
+                itemRef.current?.querySelector<HTMLAnchorElement>(':scope > ul > li > .navigation-title > a')?.focus();
+              });
+            }
+          } : undefined}
           onClick={(event) => {
             // #region DSI navigation - placeholder link click
             const href = getLinkField(props).value.href;
@@ -162,16 +196,25 @@ const NavigationList = (props: NavigationListProps) => {
               return;
             }
             // Keep the existing menu-close behavior for real links.
+            event.stopPropagation();
             handleClick(event);
             // #endregion DSI navigation - placeholder link click
           }}
         >
           {getNavigationText(props)}
         </Link>
+        {hasChildren && withSubmenuButtons && (
+          <button type="button" className="submenu-toggle" tabIndex={-1} onClick={() => setKeyboardOpen(false)}
+            aria-label={`Toggle ${getLinkTitle(props)} submenu`}
+            aria-expanded={keyboardOpen || isActive || isShown} aria-controls={submenuId}>
+            <span aria-hidden="true" />
+          </button>
+        )}
       </div>
 
       {hasChildren && (
         <ul
+          id={submenuId}
           className="clearfix"
           onMouseEnter={relativeLevel === 1 ? navigationBehavior.cancelDropdownClose : undefined}
           onMouseLeave={relativeLevel === 1 ? navigationBehavior.scheduleDropdownClose : undefined}
@@ -185,7 +228,7 @@ const NavigationList = (props: NavigationListProps) => {
 
 // --- Reusable logic hook inside the same file ---
 
-const useNavigationLogic = (props: DsiNavigationComponentProps, enableDropdown: boolean) => {
+const useNavigationLogic = (props: DsiNavigationComponentProps, enableDropdown: boolean, withSubmenuButtons = false) => {
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const { page } = useSitecore();
 
@@ -236,6 +279,7 @@ const useNavigationLogic = (props: DsiNavigationComponentProps, enableDropdown: 
           itemKey={itemKey}
           itemPath={[itemKey]}
           navigationBehavior={navigationBehavior}
+          withSubmenuButtons={withSubmenuButtons}
         />
       );
     });
@@ -252,13 +296,18 @@ const useNavigationLogic = (props: DsiNavigationComponentProps, enableDropdown: 
   };
 };
 
+// #region Default variant - links without submenu buttons
 export const Default = (props: DsiNavigationComponentProps): JSX.Element => {
   const { id, styles, isOpenMenu, hasFields, handleToggleMenu, topLevelItems, navigationBehavior } =
-    useNavigationLogic(props, true);
-  console.log(isOpenMenu, handleToggleMenu);
+    useNavigationLogic(props, true, false);
+  // #region DSI navigation - mobile menu
+  // Each rendering needs its own ID so the button controls only its own menu.
+  const menuId = useId();
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  // #endregion DSI navigation - mobile menu
   if (!hasFields) {
     return (
-      <div className={`component navigation navigation-main ${styles}`} id={id}>
+      <div className={`component dsi-navigation navigation navigation-main ${styles}`} id={id}>
         <div className="component-content">[Navigation]</div>
       </div>
     );
@@ -266,49 +315,96 @@ export const Default = (props: DsiNavigationComponentProps): JSX.Element => {
 
   return (
     <div
-      className={`component navigation navigation-main ${styles}`}
+      className={`component dsi-navigation navigation navigation-main ${styles} ${isOpenMenu ? 'menu-open' : ''}`}
       id={id}
       onMouseLeave={navigationBehavior.handleNavigationMouseLeave}
       onBlur={navigationBehavior.handleNavigationBlur}
-      onKeyDown={navigationBehavior.handleNavigationKeyDown}
+      onKeyDown={(event) => {
+        navigationBehavior.handleNavigationKeyDown(event);
+        if (event.key === 'Escape' && isOpenMenu) {
+          handleToggleMenu(undefined, false);
+          toggleRef.current?.focus();
+        }
+      }}
     >
-      <div className="menu-humburger" />
-      <div className="component-content">
+      {/* A real button supports mouse, touch, Enter and Space without extra handlers. */}
+      <button ref={toggleRef} type="button" className="menu-humburger"
+        aria-expanded={isOpenMenu} aria-controls={menuId}
+        aria-label={isOpenMenu ? 'Close navigation' : 'Open navigation'}
+        onClick={() => handleToggleMenu()}><span aria-hidden="true" /></button>
+      <div className="component-content" id={menuId}>
         <nav>
           <ul className="clearfix">{topLevelItems}</ul>
         </nav>
       </div>
     </div>
-    // <div className={`component navigation navigation-main ${styles}`} id={id}>
-    //   <label className="menu-mobile-navigate-wrapper">
-    //     <input type="checkbox" className="menu-mobile-navigate" checked={isOpenMenu} onChange={() => handleToggleMenu()} />
-    //     <div className="menu-humburger" />
-    //     <div className="component-content">
-    //       <nav>
-    //         <ul className="clearfix">{topLevelItems}</ul>
-    //       </nav>
-    //     </div>
-    //   </label>
-    // </div>
   );
 };
 
+// #endregion Default variant
+
+// #region WithSubmenuButtons variant - arrows with one Tab stop per parent
+export const WithSubmenuButtons = (props: DsiNavigationComponentProps): JSX.Element => {
+  const { id, styles, isOpenMenu, hasFields, handleToggleMenu, topLevelItems, navigationBehavior } =
+    useNavigationLogic(props, true, true);
+  // #region DSI navigation - mobile menu
+  // Each rendering needs its own ID so the button controls only its own menu.
+  const menuId = useId();
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  // #endregion DSI navigation - mobile menu
+  if (!hasFields) {
+    return (
+      <div className={`component dsi-navigation navigation navigation-main ${styles}`} id={id}>
+        <div className="component-content">[Navigation]</div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`component dsi-navigation navigation navigation-main ${styles} ${isOpenMenu ? 'menu-open' : ''}`}
+      id={id}
+      onMouseLeave={navigationBehavior.handleNavigationMouseLeave}
+      onBlur={navigationBehavior.handleNavigationBlur}
+      onKeyDown={(event) => {
+        navigationBehavior.handleNavigationKeyDown(event);
+        if (event.key === 'Escape' && isOpenMenu) {
+          handleToggleMenu(undefined, false);
+          toggleRef.current?.focus();
+        }
+      }}
+    >
+      {/* A real button supports mouse, touch, Enter and Space without extra handlers. */}
+      <button ref={toggleRef} type="button" className="menu-humburger"
+        aria-expanded={isOpenMenu} aria-controls={menuId}
+        aria-label={isOpenMenu ? 'Close navigation' : 'Open navigation'}
+        onClick={() => handleToggleMenu()}><span aria-hidden="true" /></button>
+      <div className="component-content" id={menuId}>
+        <nav>
+          <ul className="clearfix">{topLevelItems}</ul>
+        </nav>
+      </div>
+    </div>
+  );
+};
+
+// #endregion WithSubmenuButtons variant
+
 export const MainDesktopNavigation = (props: DsiNavigationComponentProps): JSX.Element => {
-  const { id, styles, isOpenMenu, hasFields, handleToggleMenu, topLevelItems } = useNavigationLogic(
+  const { id, styles, hasFields, topLevelItems } = useNavigationLogic(
     props,
     false
   );
-  console.log(isOpenMenu, handleToggleMenu);
   if (!hasFields) {
     return (
-      <div className={`component navigation main-nav ${styles}`} id={id}>
+      <div className={`component dsi-navigation navigation main-nav ${styles}`} id={id}>
         <div className="component-content">[Main Nav]</div>
       </div>
     );
   }
 
   return (
-    <div className={`component navigation main-nav ${styles}`} id={id}>
+    <div className={`component dsi-navigation navigation main-nav ${styles}`} id={id}>
       <div className="component-content">
         <nav>
           <ul className="clearfix">{topLevelItems}</ul>

@@ -77,27 +77,27 @@ export const useDsiNavigation = ({
   /** Opens the hovered item path and closes dropdowns from sibling branches. */
   const handleItemMouseEnter = useCallback(
     (itemPath: string[], relativeLevel: number) => {
-      if (!enableDropdown || relativeLevel > 2) {
+      if (!enableDropdown || isMobileNavigation || window.matchMedia('(max-width: 767px)').matches || relativeLevel > 2) {
         return;
       }
 
       cancelDropdownClose();
       setShownItemPath(itemPath);
     },
-    [cancelDropdownClose, enableDropdown]
+    [cancelDropdownClose, enableDropdown, isMobileNavigation]
   );
 
   /** Matches the former desktop focus behaviour for a top-level navigation item. */
   const handleTopLevelFocus = useCallback(
     (itemPath: string[]) => {
-      if (!enableDropdown) {
+      if (!enableDropdown || isMobileNavigation || window.matchMedia('(max-width: 767px)').matches) {
         return;
       }
 
       cancelDropdownClose();
       setShownItemPath(itemPath.slice(0, 1));
     },
-    [cancelDropdownClose, enableDropdown]
+    [cancelDropdownClose, enableDropdown, isMobileNavigation]
   );
 
   /**
@@ -154,7 +154,9 @@ export const useDsiNavigation = ({
   /** Preserves the component's existing active-class toggle and mobile animation. */
   const handleTitleClick = useCallback(
     (event: MouseEvent<HTMLDivElement>, itemKey: string, hasChildren: boolean) => {
-      const isOpening = !activeItemKeys.has(itemKey);
+      const isOpening = !activeItemKeys.has(itemKey) && !shownItemPath.includes(itemKey);
+      cancelDropdownClose();
+      setShownItemPath([]);
 
       setActiveItemKeys((currentKeys) => {
         const nextKeys = new Set(currentKeys);
@@ -172,7 +174,7 @@ export const useDsiNavigation = ({
         animateMobileSubmenu(event.currentTarget, isOpening);
       }
     },
-    [activeItemKeys, animateMobileSubmenu]
+    [activeItemKeys, shownItemPath, cancelDropdownClose, animateMobileSubmenu]
   );
 
   /** Closes the menu immediately when the pointer leaves the complete navigation. */
@@ -197,6 +199,9 @@ export const useDsiNavigation = ({
     (event: KeyboardEvent<HTMLElement>) => {
       if (event.key === 'Escape') {
         closeDropdowns();
+        // Clear click-open mobile submenus as well as the desktop hover path.
+        setActiveItemKeys(new Set());
+        submenuAnimationsRef.current.forEach((animation) => animation.cancel());
       }
     },
     [closeDropdowns]

@@ -1,0 +1,524 @@
+// Adapted from the JSS Core UI navigation stylesheet. Scoped to DSI renderings.
+
+.dsi-navigation.navigation {
+  background: 0 0
+}
+
+.dsi-navigation.navigation .level0>.navigation-title>a,
+.dsi-navigation.navigation .level1>.navigation-title>a {
+  font-size: 18px;
+  border-color: #89c6cc;
+  border-style: solid;
+  border-width: 0 0 2px 0;
+  padding-right: 3px;
+  margin-right: 5px
+}
+
+.dsi-navigation.navigation .level0>.navigation-title>a:hover,
+.dsi-navigation.navigation .level1>.navigation-title>a:hover {
+  text-decoration: none
+}
+
+.dsi-navigation.navigation a {
+  color: #747474
+}
+
+.lt-ie9 .dsi-navigation.navigation a,
+.lt-ie9 .dsi-navigation.navigation a span {
+  color: #747474
+}
+
+.dsi-navigation.navigation a:focus,
+.dsi-navigation.navigation a:hover {
+  color: #747474
+}
+
+.dsi-navigation.navigation li.submenu {
+  margin-bottom: 0
+}
+
+.dsi-navigation.navigation li>.navigation-title>a {
+  padding: 3px 5px 3px 0;
+  display: block;
+  color: #747474;
+  text-decoration: none
+}
+
+.dsi-navigation.navigation li>ul a {
+  font-size: 14px
+}
+
+.dsi-navigation.navigation .submenu>ul {
+  padding-left: 10px
+}
+
+.dsi-navigation.navigation.navigation-fat {
+  background: #fff;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #d2d2d2
+}
+
+.dsi-navigation.navigation.navigation-fat a {
+  text-decoration: none
+}
+
+.dsi-navigation.navigation.navigation-fat nav>ul {
+  list-style: none;
+  padding: 10px 0;
+  overflow: hidden
+}
+
+.dsi-navigation.navigation.navigation-fat .rel-level1 {
+  margin: 10px;
+  padding: 0;
+  display: inline-block;
+  vertical-align: top
+}
+
+.dsi-navigation.navigation.navigation-fat .rel-level1.submenu ul a {
+  position: relative
+}
+
+.dsi-navigation.navigation.navigation-fat .rel-level1.submenu ul a:before {
+  display: inline-block;
+  font-size: inherit;
+  transform: translateY(-50%);
+  position: absolute;
+  content: ""; width: 0.45em; height: 0.45em; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  top: 50%;
+  left: -9px;
+  font-size: 10px
+}
+
+.dsi-navigation.navigation.navigation-fat .rel-level1>.navigation-title>a {
+  border-top-width: 2px;
+  border-top-style: solid;
+  border-top-color: #89c6cc;
+  border-bottom: 0;
+  background: #f6f6f6;
+  padding: 5px 10px;
+  display: block;
+  width: auto
+}
+
+.dsi-navigation.navigation.navigation-fat .rel-level1>.navigation-title>a:hover {
+  border-color: #1b809e
+}
+
+.dsi-navigation.navigation.navigation-fat .rel-level1>ul {
+  padding: 0
+}
+
+.dsi-navigation.navigation.navigation-fat .rel-level2 {
+  padding-left: 10px;
+  display: block
+}
+
+.dsi-navigation.navigation.navigation-main .component-content>nav {
+  position: relative
+}
+
+.dsi-navigation.navigation.navigation-main .component-content>nav ul:after {
+  content: "";
+  display: table;
+  clear: both
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level1 {
+  float: left
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level1.active>.navigation-title>a {
+  border-color: #89c6cc
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level1>.navigation-title>a {
+  border-width: 2px 0 0 0;
+  border-color: transparent
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level1>.navigation-title>a:hover {
+  border-color: #89c6cc
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level1.submenu>.navigation-title a {
+  position: relative;
+  padding-right: 15px
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level1.submenu>.navigation-title a:after {
+  display: inline-block;
+  font-size: inherit;
+  font-size: 10px;
+  content: ""; width: 0.45em; height: 0.45em; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  position: absolute;
+  transform: translateY(-50%);
+  top: 50%;
+  right: 0
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level1>ul {
+  overflow: hidden;
+  display: none;
+  z-index: 10;
+  position: absolute;
+  top: 100%;
+  background: #f6f6f6;
+  margin-left: 0;
+  margin-top: -2px;
+  border-top: 2px solid #89c6cc;
+  border-left: 1px solid #d2d2d2;
+  border-bottom: 1px solid #d2d2d2
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level1.show>a+ul {
+  display: block !important
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level1.show>ul {
+  display: block !important;
+  min-width: 60px
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level1.active>.navigation-title>a:link,
+.dsi-navigation.navigation.navigation-main .rel-level1.active>.navigation-title>a:visited {
+  color: #878787
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level1.active>span {
+  display: block;
+  padding: 10px 20px;
+  color: #fff
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level1.submenu.active {
+  border-color: #176f89
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level2:focus,
+.dsi-navigation.navigation.navigation-main .rel-level2:hover {
+  transition: background .2s ease-in;
+  background: #f6f6f6
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level2 div>a {
+  display: block;
+  font-weight: 400;
+  font-size: 14px;
+  text-align: center
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level2 div>a:focus,
+.dsi-navigation.navigation.navigation-main .rel-level2 div>a:hover {
+  color: #222
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level2.submenu {
+  box-sizing: border-box
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level2.submenu.navigation-image {
+  text-align: center
+}
+
+.dsi-navigation.navigation.navigation-main .rel-level2.submenu.navigation-image .field-navigationtext,
+.dsi-navigation.navigation.navigation-main .rel-level2.submenu.navigation-image>a {
+  text-align: left
+}
+
+.dsi-navigation.navigation.navigation-main.navigation-main-horizontal .submenu>ul {
+  padding-left: 0
+}
+
+.dsi-navigation.navigation.navigation-main.navigation-main-horizontal .rel-level1.show>a+ul {
+  display: inline-flex !important;
+  flex-wrap: wrap
+}
+
+.dsi-navigation.navigation.navigation-main.navigation-main-horizontal .rel-level1.show>ul {
+  display: inline-flex !important;
+  flex-wrap: wrap
+}
+
+.dsi-navigation.navigation.navigation-main.navigation-main-horizontal .rel-level1>ul {
+  width: 100%;
+  clear: both;
+  left: 0
+}
+
+.dsi-navigation.navigation.navigation-main.navigation-main-horizontal .rel-level2 {
+  float: left;
+  padding: 10px;
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-right-color: #d2d2d2;
+  flex-grow: 1;
+  flex-basis: 23%
+}
+
+.dsi-navigation.navigation.navigation-main.navigation-main-vertical .rel-level1>ul {
+  padding-left: 0;
+  width: auto;
+  left: auto;
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-right-color: #d2d2d2
+}
+
+.dsi-navigation.navigation.navigation-main.navigation-main-vertical .rel-level1>ul>li {
+  padding: 5px 10px
+}
+
+.dsi-navigation.navigation.navigation-mobile nav>ul {
+  border: none;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #d2d2d2
+}
+
+.dsi-navigation.navigation.navigation-mobile .rel-level1 {
+  cursor: pointer;
+  margin: 0;
+  background: #fff
+}
+
+.dsi-navigation.navigation.navigation-mobile .rel-level1>ul {
+  padding-left: 25px;
+  display: none;
+  background: #f6f6f6
+}
+
+.dsi-navigation.navigation.navigation-mobile .rel-level1>ul li {
+  position: relative
+}
+
+.dsi-navigation.navigation.navigation-mobile .rel-level1>ul li a:before {
+  display: inline-block;
+  font-size: inherit;
+  content: ""; width: 0.45em; height: 0.45em; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  display: block;
+  position: absolute;
+  left: 0;
+  font-size: 10px;
+  top: 20px;
+  transform: translateY(-50%)
+}
+
+.dsi-navigation.navigation.navigation-mobile .rel-level1.submenu.active>.navigation-title:before {
+  transform: rotate(180deg);
+  transition: .6s;
+  transform-style: preserve-3d
+}
+
+.dsi-navigation.navigation.navigation-mobile .rel-level1.submenu.is-expanded>ul {
+  display: block
+}
+
+.dsi-navigation.navigation.navigation-mobile .rel-level1.submenu>.navigation-title {
+  position: relative
+}
+
+.dsi-navigation.navigation.navigation-mobile .rel-level1.submenu>.navigation-title:before {
+  display: inline-block;
+  font-size: inherit;
+  content: ""; width: 0.45em; height: 0.45em; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  display: block;
+  position: absolute;
+  right: 10px;
+  font-size: 10px;
+  top: 20px;
+  transform: translateY(-50%);
+  transform: rotate(0);
+  transition: .6s;
+  transform-style: preserve-3d
+}
+
+.dsi-navigation.navigation.navigation-mobile .rel-level1>.navigation-title {
+  border-bottom: 1px solid #89c6cc;
+  margin: 0
+}
+
+.dsi-navigation.navigation.navigation-mobile .rel-level1>.navigation-title:last-child {
+  border-bottom: none
+}
+
+.dsi-navigation.navigation.navigation-mobile .rel-level1 .navigation-title {
+  padding: 10px
+}
+
+.dsi-navigation.navigation.navigation-mobile .rel-level1 .navigation-title>a {
+  text-decoration: none;
+  color: #747474;
+  display: inline
+}
+
+.dsi-navigation.navigation.navigation-mobile .rel-level2 {
+  display: list-item
+}
+
+.dsi-navigation.navigation.navigation-mobile .rel-level2 .navigation-title>a {
+  font-weight: 500
+}
+
+.dsi-navigation.navigation.navigation-mobile .rel-level2 ul {
+  display: none
+}
+
+.dsi-navigation.navigation.navigation-sidebar a {
+  text-decoration: none
+}
+
+.dsi-navigation.navigation.navigation-sidebar nav>ul .rel-level1>.navigation-title {
+  margin-bottom: 0
+}
+
+.dsi-navigation.navigation.navigation-sidebar nav>ul .rel-level1>.navigation-title>a {
+  padding: 5px 10px;
+  display: block;
+  position: relative;
+  z-index: 1;
+  margin-right: 0
+}
+
+.dsi-navigation.navigation.navigation-sidebar nav>ul .rel-level1>ul {
+  margin-left: 10px;
+  margin-top: 5px
+}
+
+.dsi-navigation.navigation.navigation-sidebar nav>ul .rel-level2 {
+  display: block
+}
+
+.dsi-navigation.navigation.sitemap-navigation .level2 a {
+  position: relative;
+  padding-left: 10px
+}
+
+.dsi-navigation.navigation.sitemap-navigation .level2 a:before {
+  font-size: 14px;
+  font-size: 1.4rem;
+  display: inline-block;
+  font-size: inherit;
+  transform: translateY(-50%) scale(1, -1);
+  position: absolute;
+  content: ""; width: 0.45em; height: 0.45em; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  top: 50%;
+  left: -8px
+}
+
+
+// DSI additions: CSS icons replace the original Font Awesome glyphs.
+.dsi-navigation.navigation {
+  ul { list-style: none; margin: 0; padding: 0; }
+  .navigation-title { position: relative; }
+  a:focus-visible, button:focus-visible { outline: 2px solid #176f89; outline-offset: 3px; }
+  .menu-humburger { display: none; }
+  .submenu-toggle {
+    border: 0;
+    background: transparent;
+    color: #747474;
+    padding: 0;
+    width: 22px;
+    height: 28px;
+    flex: 0 0 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    span { display: inline-block; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); }
+    &[aria-expanded='true'] span { transform: rotate(225deg); }
+  }
+  .navigation-title:has(> .submenu-toggle) { display: flex; align-items: center; gap: 0; }
+  .navigation-title > a { flex: 1; }
+  // The separate toggle supplies the arrow and lets a real parent link still navigate.
+  &.navigation-main .rel-level1.submenu > .navigation-title a::after,
+  &.navigation-mobile .rel-level1.submenu > .navigation-title::before { content: none; }
+  // Link-only parents still need a visual arrow. It belongs to the link,
+  // so it adds no button or extra Tab stop. The button variant is excluded.
+  &.navigation-main .navigation-title.child:not(:has(> .submenu-toggle)) > a::after {
+    content: '';
+    display: inline-block;
+    position: static;
+    width: 7px;
+    height: 7px;
+    margin-left: 8px;
+    vertical-align: 3px;
+    border: solid currentColor;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .rel-level1.is-expanded > ul { display: block; }
+  &.navigation-fat .rel-level1.submenu ul a::before,
+  &.navigation-mobile .rel-level1 > ul li a::before { transform: translateY(-50%) rotate(-45deg); }
+}
+
+// Compact desktop defaults follow the JSS example. Keep the CMS mega-menu variant full width.
+@media (min-width: 768px) {
+  .dsi-navigation.navigation.navigation-main:not(.navigation-mobile) {
+    nav > ul { display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
+    nav > ul::after { display: none; }
+    .rel-level1 { float: none; }
+    .rel-level1 > .navigation-title > a {
+      padding: 3px 0;
+      margin: 0;
+      border: 0;
+      line-height: 1.4;
+    }
+    &:not(.navigation-main-horizontal) {
+      .rel-level1 { position: relative; }
+      .rel-level1 > ul {
+        left: 0; top: 100%; margin: 0; padding: 0;
+        min-width: 100%; width: max-content; max-width: min(320px, 90vw);
+        border: 1px solid #d2d2d2;
+        background: #f6f6f6;
+      }
+      .rel-level2 > .navigation-title > a { padding: 3px 10px; text-align: left; }
+    }
+  }
+}
+
+// Shared stacked presentation for the CMS mobile variant and narrow screens.
+@mixin stacked-navigation {
+  > .component-content { display: none; }
+  &.menu-open > .component-content { display: block; }
+  > .menu-humburger {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px; border: 1px solid #d2d2d2;
+    background: #fff; color: #747474; cursor: pointer;
+    span { width: 20px; height: 2px; background: currentColor; box-shadow: 0 -6px currentColor, 0 6px currentColor; }
+  }
+  .rel-level1 { float: none; margin: 0; }
+  .submenu-toggle { width: 44px; height: 44px; flex-basis: 44px; }
+  // Match the desktop variant selectors so their absolute positioning cannot win.
+  // In mobile flow, children must push the next parent down instead of overlaying it.
+  li > ul,
+  .rel-level1 > ul,
+  &.navigation-main-horizontal .rel-level1 > ul,
+  &.navigation-main-vertical .rel-level1 > ul {
+    display: none;
+    position: static;
+    inset: auto;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+    padding: 0 0 0 20px;
+    border: 0;
+  }
+  // Override SXA's desktop .show rule: touch menus use the explicit active state.
+  li.show > ul { display: none !important; }
+  li.is-expanded > ul { display: block !important; }
+  .rel-level1 > .navigation-title { border-bottom: 1px solid #d2d2d2; padding: 5px; }
+  .rel-level2 div > a { text-align: left; }
+}
+.dsi-navigation.navigation.navigation-main.navigation-mobile { @include stacked-navigation; }
+@media (max-width: 767px) {
+  .dsi-navigation.navigation.navigation-main { @include stacked-navigation; }
+}
+
+
+// Keyboard focus in the opt-in variant opens children at every screen size.
+.dsi-navigation.navigation.navigation-main li.keyboard-open > ul {
+  display: block !important;
+}
