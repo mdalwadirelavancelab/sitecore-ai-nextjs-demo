@@ -20,6 +20,10 @@ interface Fields {
   NavigationTitle: TextField;
   Href: string;
   NavigationLink: string;
+  // #region DSI navigation - custom link field
+  // Added by our server helper. Preserve the CMS link settings, not just its URL.
+  NavigationLinkField?: LinkField;
+  // #endregion DSI navigation - custom link field
   Querystring: string;
   Children: Array<Fields>;
   Styles: string[];
@@ -66,6 +70,14 @@ const getLinkTitle = (props: DsiNavigationComponentProps): string => {
 };
 
 const getLinkField = (props: DsiNavigationComponentProps): LinkField => {
+  // #region DSI navigation - use the full CMS link
+  // Prefer the full custom link field. Do not attach the normal page's Querystring
+  // to a custom external/media link; use that link's own settings instead.
+  if (props.fields.NavigationLinkField) {
+    const field = props.fields.NavigationLinkField;
+    return { ...field, value: { ...field.value, title: field.value.title || getLinkTitle(props) } };
+  }
+  // #endregion DSI navigation - use the full CMS link
   const { NavigationLink, Href, Querystring } = props.fields;
 
   const href = NavigationLink?.trim() ? NavigationLink : Href;
@@ -107,21 +119,21 @@ const NavigationList = (props: NavigationListProps) => {
 
   const childItems = hasChildren
     ? fields.Children.map((child, index) => {
-        // The position is included because a Sitecore item ID can be blank in editing data.
-        const childKey = `${itemKey}-${index}-${child.Id || 'item'}`;
+      // The position is included because a Sitecore item ID can be blank in editing data.
+      const childKey = `${itemKey}-${index}-${child.Id || 'item'}`;
 
-        return (
-          <NavigationList
-            key={childKey}
-            fields={child}
-            handleClick={handleClick}
-            relativeLevel={relativeLevel + 1}
-            itemKey={childKey}
-            itemPath={[...itemPath, childKey]}
-            navigationBehavior={navigationBehavior}
-          />
-        );
-      })
+      return (
+        <NavigationList
+          key={childKey}
+          fields={child}
+          handleClick={handleClick}
+          relativeLevel={relativeLevel + 1}
+          itemKey={childKey}
+          itemPath={[...itemPath, childKey]}
+          navigationBehavior={navigationBehavior}
+        />
+      );
+    })
     : null;
 
   return (
@@ -138,7 +150,21 @@ const NavigationList = (props: NavigationListProps) => {
         <Link
           field={getLinkField(props)}
           editable={page.mode.isEditing}
-          onClick={handleClick}
+          // onClick={handleClick}
+          onClick={(event) => {
+            // #region DSI navigation - placeholder link click
+            const href = getLinkField(props).value.href;
+            if (href && /^#+$/.test(href)) {
+              // # is a menu placeholder: do not navigate or scroll to the page top.
+              // The click still reaches the parent div, which toggles the submenu.
+              // Skip handleClick here because it closes dropdowns.
+              event.preventDefault();
+              return;
+            }
+            // Keep the existing menu-close behavior for real links.
+            handleClick(event);
+            // #endregion DSI navigation - placeholder link click
+          }}
         >
           {getNavigationText(props)}
         </Link>
@@ -165,7 +191,10 @@ const useNavigationLogic = (props: DsiNavigationComponentProps, enableDropdown: 
 
   const { params, fields } = props;
 
-  const hasFields = Object.values(fields).length > 0;
+  // #region DSI navigation - missing fields guard
+  // A new or unconfigured rendering may have no fields. Show the fallback instead of throwing.
+  const hasFields = Object.values(fields ?? {}).length > 0;
+  // #endregion DSI navigation - missing fields guard
   const id = params?.RenderingIdentifier || params?.Id || '';
   const styles = `${params?.GridParameters ?? ''} ${params?.Styles ?? ''}`.trim();
   const styleNames = styles.split(/\s+/).filter(Boolean);
@@ -193,7 +222,7 @@ const useNavigationLogic = (props: DsiNavigationComponentProps, enableDropdown: 
     handleToggleMenu(event, false);
   };
 
-  const topLevelItems = Object.values(fields)
+  const topLevelItems = Object.values(fields ?? {})
     .filter(Boolean)
     .map((element: Fields, index: number) => {
       const itemKey = `navigation-${index}-${element.Id || 'item'}`;

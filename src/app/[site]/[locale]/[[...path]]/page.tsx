@@ -12,6 +12,9 @@ import Providers from "src/Providers";
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { getBaseUrl } from "lib/utils";
+// #region DSI navigation - custom data helper
+import { getDsiNavigationData } from "lib/DSI/Common/getDsiNavigationData";
+// #endregion DSI navigation - custom data helper
 
 type PageProps = {
   params: Promise<{
@@ -31,9 +34,33 @@ export default async function Page({ params }: PageProps) {
 
   // Fetch the page data from Sitecore
   let page;
+  // #region DSI navigation - request headers
+  // Custom DSI navigation makes an extra GraphQL request for link fields.
+  // Normal pages need no editing headers. Page Builder supplies them below.
+  let navigationHeaders: Record<string, string> = {};
+  // #endregion DSI navigation - request headers
   if (draft.isEnabled) {
     const headers = await nextHeaders();
     const previewData = client.getPreviewData(headers);
+
+    // #region DSI navigation - Page Builder context
+    // Pass the page's editing/preview context to the extra navigation request.
+    // This lets the request use the same site and mode when reading saved changes.
+    // Design Library uses different preview data, so it does not enter this block.
+    if (previewData && typeof previewData === 'object' && 'mode' in previewData &&
+      'site' in previewData && !isDesignLibraryPreviewData(previewData)) {
+      const editing = previewData as { mode: string; site: string; variantId?: string; layoutKind?: string; previewTime?: string };
+      navigationHeaders = {
+        sc_editMode: String(editing.mode === 'edit'),
+        sc_previewMode: String(editing.mode === 'preview'),
+        sc_site: editing.site,
+        sc_variant: editing.variantId || 'default',
+        sc_layoutKind: editing.layoutKind || 'final',
+        ...(editing.previewTime ? { sc_previewTime: editing.previewTime } : {}),
+      };
+    }
+    // #endregion DSI navigation - Page Builder context
+
     if (isDesignLibraryPreviewData(previewData)) {
       page = await client.getDesignLibraryData(previewData);
     } else {
@@ -47,6 +74,13 @@ export default async function Page({ params }: PageProps) {
   if (!page) {
     notFound();
   }
+
+  // #region DSI navigation - add custom fields to page data
+  // Custom DSI step: the standard Navigation resolver does not include our link,
+  // rich text, or image fields. Add these fields before passing the page to Layout.
+  // Keep the resolver's existing parent/child tree, order, and navigation filtering.
+  page = await getDsiNavigationData(page, client, navigationHeaders);
+  // #endregion DSI navigation - add custom fields to page data
 
   // Fetch the component data from Sitecore (Likely will be deprecated)
   const componentProps = await client.getComponentData(
