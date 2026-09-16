@@ -37,7 +37,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['DsiSearchboxComponent', { ...DsiSearchboxComponent }],
   ['DsiRichTextComponent', { ...DsiRichTextComponent }],
   ['DsiPromoCardComponent', { ...DsiPromoCardComponent }],
-  ['DsiPlainHTMLComponent', { ...DsiPlainHTMLComponent }],
+  ['DsiPlainHTMLComponent', { ...DsiPlainHTMLComponent, componentType: 'client' }],
   ['DsiPageSearchComponent', { ...DsiPageSearchComponent }],
   ['DsiNavigationComponent', { ...DsiNavigationComponent, componentType: 'client' }],
   ['DsiLinkListComponent', { ...DsiLinkListComponent }],
