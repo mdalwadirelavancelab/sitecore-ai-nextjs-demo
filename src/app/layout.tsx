@@ -9,7 +9,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://edge-platform.sitecorecloud.io" />
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body>{children}</body>
+      {/* Common classes are present in the initial HTML on every route.
+          BodyAttributes adds the current CMS page's ID and classes after hydration. */}
+      <body className="default-device bodyclass">{children}</body>
     </html>
   );
 }
