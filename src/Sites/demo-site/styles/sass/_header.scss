@@ -1,0 +1,7 @@
+// main.scss includes these example rules inside the demo-site wrapper.
+@mixin styles {
+  > header {
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--demo-site-accent);
+  }
+}

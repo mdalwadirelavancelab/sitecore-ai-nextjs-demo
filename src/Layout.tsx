@@ -4,6 +4,11 @@ import Scripts from "src/Scripts";
 import SitecoreStyles from "components/content-sdk/SitecoreStyles";
 import { AppPlaceholder } from "@sitecore-content-sdk/nextjs";
 import componentMap from ".sitecore/component-map";
+// #region Site-specific styles
+// Site design selection lives outside DSI's reusable component code.
+import SiteStyles from "src/Sites/SiteStyles";
+import { getSiteTheme } from "src/Sites/siteThemes";
+// #endregion Site-specific styles
 // #region DSI page body attributes
 import BodyAttributes from "lib/DSI/Common/BodyAttributes";
 // #endregion DSI page body attributes
@@ -49,14 +54,23 @@ const Layout = ({ page }: LayoutProps): JSX.Element => {
   const bodyClass = fields?.BodyCssClass?.value?.toString() ?? '';
   // #endregion DSI page body attributes
 
+  // #region Site-specific styles
+  // Use the site from the fetched page, including Page Builder requests.
+  // A site without a mapping continues to use only the existing common styles.
+  const siteTheme = getSiteTheme(page.siteName);
+  // #endregion Site-specific styles
+
   return (
     <>
       {/* Update the real document body, not the wrapper div below. */}
       <BodyAttributes bodyId={bodyId} bodyClass={bodyClass} isEditing={mode.isEditing} />
       <Scripts />
       <SitecoreStyles layoutData={layout} />
+      {/* Load this site's stylesheet. Existing CMS styles are still supported. */}
+      <SiteStyles theme={siteTheme} />
       {/* root placeholder for the app, which we add components to using route data */}
-      <div className={mainClassPageEditing}>
+      {/* Site SCSS is scoped to this wrapper in both normal and editing modes. */}
+      <div className={mainClassPageEditing} data-site-theme={siteTheme?.name}>
         {mode.isDesignLibrary ? (
           route && (
             <DesignLibraryApp

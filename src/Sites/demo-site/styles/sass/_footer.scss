@@ -1,0 +1,7 @@
+// Replace these example values with the site's actual footer design.
+@mixin styles {
+  > footer {
+    padding-block: 1rem;
+    border-top: 1px solid var(--demo-site-accent);
+  }
+}

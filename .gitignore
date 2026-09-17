@@ -26,3 +26,7 @@
 # except for component-map
 !.sitecore/component-map.ts
 !.sitecore/component-map.client.ts
+
+# Site CSS is generated from src/Sites by the dev/build scripts.
+# Ignore only stylesheet output; site images and fonts should stay in Git.
+/public/Sites/*/styles/

@@ -22,5 +22,7 @@ Open **http://localhost:3000**.
 
 ## Documentation
 
+- [Site styles and package.json commands](src/Sites/README.md) — How shared theme loading works and where site designs belong.
+
 - [Skills: application capability map](Skills.md) — High-level capability groupings for this application.
 - [Sitecore Content SDK for XM Cloud](https://doc.sitecore.com/xmc/en/developers/content-sdk/sitecore-content-sdk-for-xm-cloud.html)

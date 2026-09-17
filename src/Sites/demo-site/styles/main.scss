@@ -1,0 +1,13 @@
+@use './sass/header';
+@use './sass/footer';
+
+/*! demo-site: edit source SCSS, not the generated public CSS. */
+
+// Keep site rules inside this wrapper so they do not affect another site.
+[data-site-theme='demo-site'] {
+  --demo-site-accent: #2458a6;
+  color: #222;
+
+  @include header.styles;
+  @include footer.styles;
+}

@@ -62,17 +62,19 @@
     "esbuild": ">=0.28.1"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production npm-run-all --serial sitecore-tools:generate-map sitecore-tools:build next:build",
+    "build": "cross-env NODE_ENV=production npm-run-all --serial styles:sites:build sitecore-tools:generate-map sitecore-tools:build next:build",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "type-check": "tsc --noEmit --incremental false",
+    "styles:sites:build": "sass --load-path=node_modules --style=compressed --no-source-map src/Sites:public/Sites",
+    "styles:sites:watch": "sass --load-path=node_modules --watch --style=expanded --no-source-map src/Sites:public/Sites",
     "next:build": "next build",
     "next:dev": "cross-env NODE_OPTIONS='--inspect' next dev",
     "next:start": "next start",
     "sitecore-tools:generate-map": "sitecore-tools project component generate-map",
     "sitecore-tools:generate-map:watch": "sitecore-tools project component generate-map --watch",
     "sitecore-tools:build": "sitecore-tools project build",
-    "dev": "cross-env NODE_ENV=development npm-run-all --serial sitecore-tools:generate-map sitecore-tools:build --parallel next:dev sitecore-tools:generate-map:watch",
+    "dev": "cross-env NODE_ENV=development npm-run-all --serial styles:sites:build sitecore-tools:generate-map sitecore-tools:build --parallel next:dev sitecore-tools:generate-map:watch styles:sites:watch",
     "start": "cross-env-shell NODE_ENV=production npm-run-all --serial build next:start"
   }
 }
