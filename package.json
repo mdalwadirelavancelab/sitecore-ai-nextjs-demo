@@ -62,6 +62,7 @@
     "esbuild": ">=0.28.1"
   },
   "scripts": {
+    "site:create": "node scripts/create-site.mjs",
     "build": "cross-env NODE_ENV=production npm-run-all --serial styles:sites:build sitecore-tools:generate-map sitecore-tools:build next:build",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",

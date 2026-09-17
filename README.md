@@ -22,6 +22,7 @@ Open **http://localhost:3000**.
 
 ## Documentation
 
+- [Create a site](docs/site-creation.md) — One command to create local styles, asset folders and a component folder.
 - [Site styles and package.json commands](src/Sites/README.md) — How shared theme loading works and where site designs belong.
 
 - [Skills: application capability map](Skills.md) — High-level capability groupings for this application.

@@ -19,6 +19,13 @@ This setup does not create CMS sites or replace the SDK's hostname routing.
 
 ## Add a design on the development branch
 
+Run `npm run site:create -- xyz-demo`. See [site creation](../../docs/site-creation.md)
+for validation, existing-site messages and recovery steps. The command uses its
+own templates and does not depend on demo-site. It also creates
+`src/components/Sites/xyz-demo/.gitkeep` for site-specific React components.
+
+The manual structure below is still supported.
+
 Copy the included `demo-site` folders and replace the name with the actual CMS
 site name in the folders, SCSS wrapper, asset URLs and theme registration:
 
@@ -40,13 +47,16 @@ files for them. The entry point loads them with `@use './sass/header'` and
 `@use './sass/footer'`, then includes their mixins inside the site wrapper.
 The generated URL remains `/Sites/demo-site/styles/main.css`.
 
-Add its registration to the existing `siteThemes` object:
+Add its registration to `siteThemes.json`. Keep existing entries in that JSON
+object. `siteThemes.ts` still provides the types and lookup function used by Layout.
 
-```ts
-'demo-site': {
-  name: 'demo-site',
-  stylesheet: '/Sites/demo-site/styles/main.css',
-},
+```json
+{
+  "demo-site": {
+    "name": "demo-site",
+    "stylesheet": "/Sites/demo-site/styles/main.css"
+  }
+}
 ```
 
 Scope the site's SCSS to its wrapper:
@@ -94,24 +104,26 @@ This change separates custom site styles, not the framework bundles.
 ## Enable or disable one site's design
 
 To enable a design, add its SCSS and register the exact CMS site name in
-`siteThemes.ts`. Run `npm run styles:sites:build` or restart `npm run dev`.
+`siteThemes.json`. Run `npm run styles:sites:build` or restart `npm run dev`.
 Check that the page wrapper has the expected `data-site-theme` value and that
 its `/Sites/<site>/styles/main.css` request succeeds.
 
-To disable a design temporarily, remove only its entry from `siteThemes.ts`.
+To disable a design temporarily, remove only its entry from `siteThemes.json`.
 Keep its source and assets if it may be enabled again. The site's routing,
 content, Core UI and existing global styles continue to work. A full browser
 reload clears a stylesheet that React may have retained after navigation.
 
 ## Remove the demo or another site's folders
 
-1. Remove that site's entry from `siteThemes.ts`.
+1. Remove that site's entry from `siteThemes.json`.
 2. Check references to its images, fonts and stylesheet, including CMS HTML.
 3. Delete only `src/Sites/<site>` and `public/Sites/<site>` once their assets
    are no longer used. For this reference, replace `<site>` with `demo-site`.
 4. Remove the old generated CSS too. Sass does not delete stale output.
 5. Rebuild and check for missing asset requests. Do not delete another site's
-   folders or the shared `SiteStyles.tsx` and `siteThemes.ts` files.
+   folders or the shared `SiteStyles.tsx`, `siteThemes.ts` and `siteThemes.json` files.
+   Remove `src/components/Sites/<site>` only after checking its components are
+   no longer used. Refresh the component map after removing actual components.
 
 Deleting code folders does not delete a CMS site. Remove or disable a CMS site
 separately only when it is no longer needed.
@@ -129,6 +141,8 @@ Use this only when no site needs this mechanism:
    assets. If other site features have since been added there, keep those files.
 4. Remove the generated-styles rule from `.gitignore` and this README link
    from the root README if this documentation is also deleted.
+   Remove `site:create` from package.json and its script, tests and documentation
+   if the entire site structure is no longer used.
 5. Keep Sass installed: Core UI still uses SCSS. Restart and test the app.
 
 ## Multisite routing is separate from site styles

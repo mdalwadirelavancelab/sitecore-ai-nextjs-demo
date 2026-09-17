@@ -1,0 +1,6 @@
+{
+  "demo-site": {
+    "name": "demo-site",
+    "stylesheet": "/Sites/demo-site/styles/main.css"
+  }
+}

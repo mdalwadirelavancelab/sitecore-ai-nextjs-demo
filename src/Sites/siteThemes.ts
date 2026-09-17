@@ -1,3 +1,5 @@
+import registeredThemes from './siteThemes.json';
+
 export interface SiteTheme {
   // The value placed on the page wrapper. Site SCSS uses it to scope its rules.
   name: string;
@@ -5,15 +7,8 @@ export interface SiteTheme {
   stylesheet: string;
 }
 
-// Keys are actual CMS site names, not page names or partial design names.
-// Register site themes on the development branch with their matching SCSS files.
-// demo-site is a reference theme. It is only loaded for that exact CMS site name.
-const siteThemes: Readonly<Record<string, SiteTheme>> = {
-  'demo-site': {
-    name: 'demo-site',
-    stylesheet: '/Sites/demo-site/styles/main.css',
-  },
-};
+// The creation command updates JSON data without rewriting this lookup code.
+const siteThemes: Readonly<Record<string, SiteTheme>> = registeredThemes;
 
 export function getSiteTheme(siteName?: string): SiteTheme | undefined {
   // Do not apply one site's design to an unknown site as a fallback.
