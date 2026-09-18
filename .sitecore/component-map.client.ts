@@ -9,6 +9,7 @@ import { Form } from '@sitecore-content-sdk/nextjs';
 import * as DsiTabsComponent from 'src/components/DSI/CoreUI/DsiTabsComponent';
 import * as DsiPlainHTMLComponent from 'src/components/DSI/CoreUI/DsiPlainHTMLComponent';
 import * as DsiNavigationComponent from 'src/components/DSI/CoreUI/DsiNavigationComponent';
+import * as DsiMegaNavigationComponent from 'src/components/DSI/CoreUI/DsiMegaNavigationComponent';
 import * as DsiHeaderSearchComponent from 'src/components/DSI/CoreUI/DsiHeaderSearchComponent';
 import * as DsiCarouselComponent from 'src/components/DSI/CoreUI/DsiCarouselComponent';
 import * as DsiAccordionComponent from 'src/components/DSI/CoreUI/DsiAccordionComponent';
@@ -20,6 +21,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['DsiTabsComponent', { ...DsiTabsComponent }],
   ['DsiPlainHTMLComponent', { ...DsiPlainHTMLComponent }],
   ['DsiNavigationComponent', { ...DsiNavigationComponent }],
+  ['DsiMegaNavigationComponent', { ...DsiMegaNavigationComponent }],
   ['DsiHeaderSearchComponent', { ...DsiHeaderSearchComponent }],
   ['DsiCarouselComponent', { ...DsiCarouselComponent }],
   ['DsiAccordionComponent', { ...DsiAccordionComponent }],

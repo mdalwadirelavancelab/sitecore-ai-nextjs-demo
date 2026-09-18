@@ -1,0 +1,51 @@
+// Basic layout only. Sites can override colours and spacing in their own stylesheet.
+.dsi-mega-navigation {
+  position: relative;
+  --mega-background: #fff;
+  --mega-color: #164878;
+  --mega-border: #d2d2d2;
+  color: var(--mega-color);
+
+  ul { list-style: none; margin: 0; padding: 0; }
+  button, a { color: inherit; font: inherit; }
+  button { cursor: pointer; }
+  a { text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  :is(a, button):focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+  .mega-items { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+  .mega-trigger, .mega-item > .mega-link { padding: .75rem 1rem; }
+  .mega-trigger { display: flex; align-items: center; gap: .75rem; background: transparent; border: 0; }
+  .mega-chevron { width: .5rem; height: .5rem; border-right: 2px solid; border-bottom: 2px solid; transform: rotate(45deg); }
+  .is-open > .mega-trigger .mega-chevron { transform: rotate(225deg); }
+  .mega-panel {
+    position: absolute; inset-inline: 0; top: 100%; z-index: 100;
+    padding: 2rem; background: var(--mega-background); border: 1px solid var(--mega-border);
+    border-radius: 1rem; box-shadow: 0 .5rem 1.5rem #0002;
+    max-height: 75vh; overflow-y: auto;
+  }
+  .mega-panel[hidden] { display: none; }
+  .mega-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--mega-border); margin-bottom: 1.5rem; padding-bottom: 1rem; }
+  .mega-panel-heading h2 { margin: 0; font-size: 1.75rem; }
+  .mega-close { flex-shrink: 0; width: 44px; height: 44px; border: 0; border-radius: 50%; background: #f3f3f3; font-size: 1.5rem; }
+  .mega-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 2rem; }
+  .mega-column { min-width: 0; }
+  .mega-column h3 { font-size: 1.125rem; margin: 0 0 1rem; }
+  .mega-links > li + li { margin-top: 1rem; }
+  .mega-link { display: flex; align-items: flex-start; gap: .75rem; overflow-wrap: anywhere; }
+  .mega-link-image { width: 64px; height: 64px; object-fit: contain; flex-shrink: 0; }
+  .mega-link-copy, .mega-description { display: block; }
+  .mega-description { color: #555; font-size: .9em; margin-top: .25rem; white-space: pre-line; }
+  .mega-badge { margin-inline-start: .5rem; background: #b00000; color: #fff; border-radius: .25rem; padding: .1rem .4rem; font-size: .75em; }
+  .mega-view-all { display: inline-block; margin-top: 1rem; font-weight: 600; }
+  .mega-editor-message { padding: .5rem; border: 1px dashed #777; color: #333; }
+  .mega-mobile-toggle { display: none; }
+
+  @media (max-width: 767px) {
+    .mega-mobile-toggle { display: block; padding: .75rem 1rem; border: 1px solid var(--mega-border); background: var(--mega-background); }
+    .mega-items { display: none; }
+    .mega-items.is-mobile-open { display: block; }
+    .mega-trigger { width: 100%; justify-content: space-between; }
+    .mega-panel { position: static; padding: 1rem; max-height: none; box-shadow: none; }
+    .mega-columns { grid-template-columns: 1fr; }
+  }
+}

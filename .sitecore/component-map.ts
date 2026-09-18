@@ -16,6 +16,7 @@ import * as DsiPromoCardComponent from 'src/components/DSI/CoreUI/DsiPromoCardCo
 import * as DsiPlainHTMLComponent from 'src/components/DSI/CoreUI/DsiPlainHTMLComponent';
 import * as DsiPageSearchComponent from 'src/components/DSI/CoreUI/DsiPageSearchComponent';
 import * as DsiNavigationComponent from 'src/components/DSI/CoreUI/DsiNavigationComponent';
+import * as DsiMegaNavigationComponent from 'src/components/DSI/CoreUI/DsiMegaNavigationComponent';
 import * as DsiLinkListComponent from 'src/components/DSI/CoreUI/DsiLinkListComponent';
 import * as DsiLinkComponent from 'src/components/DSI/CoreUI/DsiLinkComponent';
 import * as DsiImageComponent from 'src/components/DSI/CoreUI/DsiImageComponent';
@@ -40,6 +41,7 @@ export const componentMap = new Map<string, NextjsContentSdkComponent>([
   ['DsiPlainHTMLComponent', { ...DsiPlainHTMLComponent, componentType: 'client' }],
   ['DsiPageSearchComponent', { ...DsiPageSearchComponent }],
   ['DsiNavigationComponent', { ...DsiNavigationComponent, componentType: 'client' }],
+  ['DsiMegaNavigationComponent', { ...DsiMegaNavigationComponent, componentType: 'client' }],
   ['DsiLinkListComponent', { ...DsiLinkListComponent }],
   ['DsiLinkComponent', { ...DsiLinkComponent }],
   ['DsiImageComponent', { ...DsiImageComponent }],

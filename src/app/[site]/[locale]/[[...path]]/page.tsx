@@ -18,6 +18,9 @@ import { getPlainHtmlMediaData } from "lib/DSI/Common/PlainHtml/getPlainHtmlMedi
 // #region DSI navigation - custom data helper
 import { getDsiNavigationData } from "lib/DSI/Common/getDsiNavigationData";
 // #endregion DSI navigation - custom data helper
+// #region DSI Mega Navigation
+import { getMegaNavigationData } from "lib/DSI/Common/MegaNavigation/getMegaNavigationData";
+// #endregion DSI Mega Navigation
 
 type PageProps = {
   params: Promise<{
@@ -84,6 +87,14 @@ export default async function Page({ params }: PageProps) {
   // Keep the resolver's existing parent/child tree, order, and navigation filtering.
   page = await getDsiNavigationData(page, client, navigationHeaders);
   // #endregion DSI navigation - add custom fields to page data
+
+  // #region DSI Mega Navigation
+  // Read the menu's columns and links with the page's language and editing context.
+  // This runs only when the page includes DsiMegaNavigationComponent.
+  // The rendering query currently provides only the datasource ID. This helper adds
+  // fields.megaNavigation before Layout renders the menu; no browser request is needed.
+  page = await getMegaNavigationData(page, client, navigationHeaders);
+  // #endregion DSI Mega Navigation
 
   // #region DSI Plain HTML - resolve media before rendering
   // Why this step is here: HtmlCode is Multi-Line Text, so Sitecore sends its
