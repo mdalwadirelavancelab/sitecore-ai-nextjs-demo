@@ -1,6 +1,8 @@
 # Paste this into the rendering's Component GraphQL Query field.
-# Sitecore resolves the datasource, including local items in partial designs.
-# This query returns only the ID. getMegaNavigationData.ts reads its children.
+# Find the content item assigned to this component and return its ID.
+# For example, if the author selected Main Menu, return the ID of Main Menu.
+# Sitecore handles local:/Data paths here, including menus in partial designs.
+# Next.js uses this ID to ask for the items below that menu. This query does not load them.
 query DsiMegaNavigation($datasource: String!, $language: String!) {
   datasource: item(path: $datasource, language: $language) {
     id

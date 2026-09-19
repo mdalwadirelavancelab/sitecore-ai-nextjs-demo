@@ -29,6 +29,9 @@
   .mega-close { flex-shrink: 0; width: 44px; height: 44px; border: 0; border-radius: 50%; background: #f3f3f3; font-size: 1.5rem; }
   .mega-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 2rem; }
   .mega-column { min-width: 0; }
+  .mega-column-image { display: block; max-width: 100%; height: auto; margin-bottom: 1rem; }
+  .mega-column-content { margin-bottom: 1rem; }
+  .mega-column-button { display: inline-block; padding: .5rem 1rem; border: 1px solid currentColor; margin-bottom: 1rem; }
   .mega-column h3 { font-size: 1.125rem; margin: 0 0 1rem; }
   .mega-links > li + li { margin-top: 1rem; }
   .mega-link { display: flex; align-items: flex-start; gap: .75rem; overflow-wrap: anywhere; }

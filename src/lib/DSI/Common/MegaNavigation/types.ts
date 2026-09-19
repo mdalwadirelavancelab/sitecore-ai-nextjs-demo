@@ -17,11 +17,15 @@ export interface MegaBlock extends MegaLink {
   kind: 'column' | 'listing';
   links: MegaLink[];
   viewAllLink?: LinkField;
+  // A column button can go to a different page from its heading link.
+  buttonLink?: LinkField;
   message?: string;
 }
 
 // Each top-level item is either a direct link or a button that opens its blocks.
 export interface MegaItem extends MegaLink {
+  // Optional heading inside the open panel, for example Newsroom under News.
+  panelTitle?: TextField;
   enablePanel?: Field<boolean | string>;
   blocks: MegaBlock[];
 }

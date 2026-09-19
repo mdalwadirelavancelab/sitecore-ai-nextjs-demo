@@ -18,11 +18,16 @@ for (const mode of ['Manual', 'Automatic']) {
     const listing = item('listing', 'Dsi Mega Navigation Listing', { SelectionMode: mode, ItemCount: 2 });
     const first = item('first', 'Page', { Title: 'First', Description: 'Summary', Content: '<p>Unused</p>' });
     const second = item('second', 'Page', { Content: '<p>Body</p>', Image: { src: '/image.png' } });
+    // If the CMS date field changes, keep the updated response alias and test the new
+    // field's date values here. Also check missing dates and newest-first results across batches.
     first.updated = { value: '20260919T120000Z' };
     second.updated = { value: '20260918T120000Z' };
     const tree = {
-      root: [item('menu', 'Dsi Mega Navigation Item', { EnablePanel: true })],
-      menu: [listing], source: [second, first, item('third', 'Page')],
+      root: [item('menu', 'Dsi Mega Navigation Item', { EnablePanel: true, Title: 'News', PanelTitle: 'Newsroom' })],
+      menu: [listing, item('column', 'Dsi Mega Navigation Column', {
+        Content: '<p>Explore our products</p>', Image: { src: '/column.png' },
+        ButtonLink: { href: '/products', text: 'Explore' },
+      })], column: [], source: [second, first, item('third', 'Page')],
     };
     const page = { locale: 'fr-CA', siteName: 'test', layout: { sitecore: { route: { placeholders: {
       header: [{ componentName: 'DsiMegaNavigationComponent', fields: { data: { datasource: { id: 'root' } } } }],
@@ -38,6 +43,13 @@ for (const mode of ['Manual', 'Automatic']) {
     } };
     const result = await getMegaNavigationData(page, client, { sc_editMode: 'true' });
     const links = result.layout.sitecore.route.placeholders.header[0].fields.megaNavigation.items[0].blocks[0].links;
+    const menu = result.layout.sitecore.route.placeholders.header[0].fields.megaNavigation.items[0];
+    assert.equal(menu.title.value, 'News');
+    assert.equal(menu.panelTitle.value, 'Newsroom');
+    assert.equal(menu.blocks[1].content.value, '<p>Explore our products</p>');
+    assert.equal(menu.blocks[1].image.value.src, '/column.png');
+    assert.equal(menu.blocks[1].buttonLink.value.href, '/products');
+    assert.deepEqual(menu.blocks[1].links, []);
     assert.deepEqual(links.map((link) => link.id), mode === 'Manual' ? ['second', 'first'] : ['first', 'second']);
     const secondLink = links.find((link) => link.id === 'second');
     const firstLink = links.find((link) => link.id === 'first');
