@@ -109,3 +109,56 @@ test('Content-only columns have no heading; buttons, child links and ViewAllLink
   assert.equal(text(view.find('mega-view-all')[0]), 'Link');
   assert.equal(text(view.find('mega-link-title')[0]), 'Link');
 });
+
+// A real parent URL must still be a toggle button in this variant.
+test('ButtonClick opens and closes by button without hover handlers', () => {
+  const view = setup('ButtonClick', [menu({ link: field({ href: '/about' }) })]);
+  const trigger = view.find('mega-trigger')[0];
+  assert.equal(trigger.type, 'button');
+  assert.equal(trigger.props.onFocus, undefined);
+  for (const node of view.nodes) {
+    assert.equal(node.props.onPointerEnter, undefined);
+    assert.equal(node.props.onPointerLeave, undefined);
+  }
+  trigger.props.onClick();
+  assert.deepEqual(view.changes.pop(), [0, 'about']);
+  const expanded = setup('ButtonClick', [menu()], 'about');
+  expanded.find('mega-trigger')[0].props.onClick();
+  assert.deepEqual(expanded.changes.pop(), [0, null]);
+  const direct = setup('ButtonClick', [menu({ enablePanel: field(false), link: field({ href: '/about' }) })]);
+  assert.equal(direct.find('mega-link')[0].type, 'a');
+});
+
+// Both variants must keep each mobile panel independent and offer the parent URL inside.
+test('ButtonClick mobile keeps other panels open and shows only usable parent links', () => {
+  for (const variant of ['AnchorHover', 'ButtonClick']) {
+    const view = setup(variant, [menu({ link: field({ href: '/about' }) })]);
+    const touch = view.find('mega-touch-trigger')[0];
+    assert.equal(touch.type, 'button');
+    touch.props.onClick();
+    const [index, toggle] = view.changes.pop();
+    assert.equal(index, 3);
+    assert.deepEqual(toggle(['career']), ['career', 'about']);
+    assert.deepEqual(toggle(['career', 'about']), ['career']);
+    assert.equal(view.find('mega-parent-link')[0].props.href, '/about');
+    for (const href of ['', '#']) {
+      assert.equal(setup(variant, [menu({ link: field({ href }) })]).find('mega-parent-link').length, 0);
+    }
+  }
+});
+
+test('Default mobile replaces the previous panel when multiple panels are disabled', () => {
+  const previousWindow = global.window;
+  global.window = { matchMedia: () => ({ matches: true }) };
+  try {
+    const view = setup('Default', [menu()]);
+    view.find('mega-trigger')[0].props.onClick();
+    const [index, toggle] = view.changes.pop();
+    assert.equal(index, 3);
+    assert.deepEqual(toggle([]), ['about']);
+    assert.deepEqual(toggle(['career']), ['about']);
+    assert.deepEqual(toggle(['about']), []);
+  } finally {
+    global.window = previousWindow;
+  }
+});

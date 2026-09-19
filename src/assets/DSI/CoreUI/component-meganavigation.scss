@@ -76,3 +76,26 @@
   // #endregion AnchorHover - mobile and touch
 }
 // #endregion AnchorHover - desktop
+
+// #region ButtonClick - responsive controls
+// Desktop shows the click button; mobile shows the touch button and the parent link inside.
+.dsi-mega-navigation.mega-button-click {
+  .mega-touch-trigger, .mega-parent-link { display: none; }
+
+  // #region ButtonClick - mobile and touch
+  // Small screens and touch devices use buttons to open panels, even on wide tablets.
+  // The real parent-page link is shown inside the panel instead of using a two-tap link.
+  @media (max-width: 767px), (hover: none), (pointer: coarse) {
+    .mega-desktop-trigger { display: none; }
+    .mega-touch-trigger { display: flex; }
+    .mega-parent-link { display: block; margin-bottom: 1rem; }
+    .mega-mobile-toggle { display: block; padding: .75rem 1rem; border: 1px solid var(--mega-border); background: var(--mega-background); }
+    .mega-items { display: none; }
+    .mega-items.is-mobile-open { display: block; }
+    .mega-trigger { width: 100%; justify-content: space-between; }
+    .mega-panel { position: static; padding: 1rem; max-height: none; box-shadow: none; }
+    .mega-columns { grid-template-columns: 1fr; }
+  }
+  // #endregion ButtonClick - mobile and touch
+}
+// #endregion ButtonClick - responsive controls

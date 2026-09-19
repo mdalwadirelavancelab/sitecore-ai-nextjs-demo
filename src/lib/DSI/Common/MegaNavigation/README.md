@@ -109,3 +109,23 @@ closes the menu and its panels. Desktop hover behaviour is unchanged.
 If a future site needs only one mobile panel open at a time, set
 `allowMultipleMobilePanels` to `false` in the AnchorHover region. The existing
 state update then replaces the previous panel when another parent is tapped.
+
+### ButtonClick variant
+
+Add a Headless Variant named `ButtonClick` under `DsiMegaNavigationComponent`,
+then select it in Page Builder. No new fields or rendering parameters are needed.
+Parents with panels use buttons. Click (or Enter/Space) toggles a panel; hovering
+or moving the mouse away does not change it. Arrow Down enters the panel and Escape
+closes it. Parents without panels remain direct links. Mobile behaviour follows
+AnchorHover: multiple panels can stay open, outside taps/focus do not close them,
+and each panel shows its parent link when a real URL is supplied. Tapping the same
+parent again closes only that panel. Close menu or Escape closes all mobile panels.
+The ButtonClick region also has its own `allowMultipleMobilePanels` setting.
+The variant uses the existing shared styles and has its own `mega-button-click` class.
+
+### Mobile panel setting examples
+
+Default sets `allowMultipleMobilePanels` to `false`: opening News closes About Us.
+AnchorHover and ButtonClick set it to `true`: opening News keeps About Us open.
+Each variant has its own setting. This changes mobile panel selection only;
+Default keeps its existing outside-click and focus-leave closing behaviour.

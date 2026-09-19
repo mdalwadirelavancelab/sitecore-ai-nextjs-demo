@@ -60,6 +60,8 @@ function MenuLink({ item }: { item: MegaLink }) {
 }
 // #endregion Dsi Mega Navigation Link
 
+
+
 // #region Dsi Mega Navigation - root component
 export const Default = ({ params = {}, fields }: Props) => {
   // #region Menu state and element references
@@ -74,6 +76,22 @@ export const Default = ({ params = {}, fields }: Props) => {
   const triggers = useRef(new Map<string, HTMLButtonElement>());
   const [openItem, setOpenItem] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileLayout, setMobileLayout] = useState(false);
+  const [openMobileItems, setOpenMobileItems] = useState<string[]>([]);
+  // Mobile panel behaviour
+  // true: On mobile, opening another panel keeps the already open panels open.
+  // false: On mobile, opening another panel closes the previously open panel.
+  const allowMultipleMobilePanels = false;
+  const isMobileLayout = () => window.matchMedia('(max-width: 767px)').matches;
+  const openMobilePanel = (itemId: string, toggle = true) => {
+    cancelClose();
+    setOpenMobileItems((current) => {
+      if (toggle && current.includes(itemId)) {
+        return current.filter((id) => id !== itemId);
+      }
+      return allowMultipleMobilePanels ? Array.from(new Set([...current, itemId])) : [itemId];
+    });
+  };
   const data = fields?.megaNavigation;
   const items = data?.items ?? [];
   // #endregion Menu state and element references
@@ -89,11 +107,22 @@ export const Default = ({ params = {}, fields }: Props) => {
   // Return keyboard focus when closing from inside a panel, but not on outside clicks.
   const closePanel = (restoreFocus = false) => {
     cancelClose();
-    if (restoreFocus && openItem) {
-      triggers.current.get(openItem)?.focus();
+    const focusedItem = isMobileLayout() ? openMobileItems[openMobileItems.length - 1] : openItem;
+    if (restoreFocus && focusedItem) {
+      triggers.current.get(focusedItem)?.focus();
     }
     setOpenItem(null);
+    setOpenMobileItems([]);
   };
+
+  useEffect(() => {
+    // Match Default's mobile CSS breakpoint when the browser width changes.
+    const media = window.matchMedia('(max-width: 767px)');
+    const updateLayout = () => setMobileLayout(media.matches);
+    updateLayout();
+    media.addEventListener('change', updateLayout);
+    return () => media.removeEventListener('change', updateLayout);
+  }, []);
 
   useEffect(() => {
     // Close the menu on an outside click and remove the listener when it unmounts.
@@ -103,6 +132,7 @@ export const Default = ({ params = {}, fields }: Props) => {
           clearTimeout(closeTimer.current);
         }
         setOpenItem(null);
+        setOpenMobileItems([]);
         setMobileOpen(false);
       }
     };
@@ -135,7 +165,7 @@ export const Default = ({ params = {}, fields }: Props) => {
       onKeyDown={(event) => {
         if (event.key === 'Escape') {
           event.preventDefault();
-          if (openItem) {
+          if (isMobileLayout() ? openMobileItems.length > 0 : openItem) {
             closePanel(true);
           } else {
             setMobileOpen(false);
@@ -164,7 +194,7 @@ export const Default = ({ params = {}, fields }: Props) => {
         {items.map((item) => {
           // Sitecore checkbox values can arrive as a boolean or as text.
           const panelEnabled = item.enablePanel?.value === true || ['1', 'true'].includes(String(item.enablePanel?.value).toLowerCase());
-          const expanded = panelEnabled && openItem === item.id;
+          const expanded = panelEnabled && (mobileLayout ? openMobileItems.includes(item.id) : openItem === item.id);
           const panelId = `${instanceId}-panel-${item.id}`;
           const triggerId = `${instanceId}-trigger-${item.id}`;
 
@@ -178,7 +208,7 @@ export const Default = ({ params = {}, fields }: Props) => {
             }}
 
             onPointerLeave={(event) => {
-              if (event.pointerType !== 'mouse' || editing) {
+              if (event.pointerType !== 'mouse' || editing || isMobileLayout()) {
                 return;
               }
 
@@ -201,14 +231,25 @@ export const Default = ({ params = {}, fields }: Props) => {
                   }
                 }}
                 aria-expanded={expanded} aria-controls={panelId}
-                onClick={() => { cancelClose(); setOpenItem(expanded ? null : item.id); }}
+                onClick={() => {
+                  cancelClose();
+                  if (isMobileLayout()) {
+                    openMobilePanel(item.id);
+                  } else {
+                    setOpenItem(expanded ? null : item.id);
+                  }
+                }}
                 onKeyDown={(event) => {
                   if (event.key !== 'ArrowDown') {
                     return;
                   }
 
                   event.preventDefault();
-                  setOpenItem(item.id);
+                  if (isMobileLayout()) {
+                    openMobilePanel(item.id, false);
+                  } else {
+                    setOpenItem(item.id);
+                  }
                   // Wait for React to show the panel before focusing its first control.
                   requestAnimationFrame(() => document.getElementById(panelId)?.querySelector<HTMLElement>('a[href], button')?.focus());
                 }}>
@@ -605,3 +646,276 @@ export const AnchorHover = ({ params = {}, fields }: Props) => {
   );
 };
 // #endregion AnchorHover
+
+
+// #region ButtonClick - desktop clicks and independent mobile panels
+// Desktop uses click-only buttons. Mobile follows the same behaviour as AnchorHover.
+export const ButtonClick = ({ params = {}, fields }: Props) => {
+  // #region Menu state and element references
+  const { page } = useSitecore();
+  const editing = page.mode.isEditing;
+  const { id, styles, backgroundStyle } = getComponentStyles(params);
+  // Separate IDs keep controls connected to the right panel if two menus share a page.
+  const instanceId = useId();
+  const root = useRef<HTMLElement>(null);
+  // CSS selects the visible control. Both versions use the same menu data.
+  const triggers = useRef(new Map<string, HTMLButtonElement>());
+  const desktopTriggers = useRef(new Map<string, HTMLButtonElement>());
+  const [openItem, setOpenItem] = useState<string | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [touchLayout, setTouchLayout] = useState(false);
+  const [openMobileItems, setOpenMobileItems] = useState<string[]>([]);
+  // Mobile panel behaviour
+  // true: On mobile, opening another panel keeps the already open panels open.
+  // false: On mobile, opening another panel closes the previously open panel.
+  const allowMultipleMobilePanels = true;
+  const isTouchLayout = () => window.matchMedia('(max-width: 767px), (hover: none), (pointer: coarse)').matches;
+  const openMobilePanel = (itemId: string, toggle = true) => {
+    setOpenMobileItems((current) => {
+      if (toggle && current.includes(itemId)) {
+        return current.filter((id) => id !== itemId);
+      }
+      return allowMultipleMobilePanels ? Array.from(new Set([...current, itemId])) : [itemId];
+    });
+  };
+  const data = fields?.megaNavigation;
+  const items = data?.items ?? [];
+  // #endregion Menu state and element references
+
+  // #region Closing panels and cleaning up event listeners
+  // Skip controls hidden by desktop/mobile styles when entering the panel.
+  const focusFirstPanelLink = (panelId: string) => {
+    requestAnimationFrame(() => {
+      const controls = document.getElementById(panelId)?.querySelectorAll<HTMLElement>('a[href], button');
+      Array.from(controls ?? []).find((control) => control.getClientRects().length > 0)?.focus();
+    });
+  };
+
+  // Return keyboard focus when closing from inside a panel, but not on outside clicks.
+  const closePanel = (restoreFocus = false) => {
+    if (restoreFocus && openItem) {
+      (window.matchMedia('(max-width: 767px), (hover: none), (pointer: coarse)').matches
+        ? triggers.current.get(openItem)
+        : desktopTriggers.current.get(openItem))?.focus();
+    }
+    setOpenItem(null);
+  };
+
+  useEffect(() => {
+    // Keep CSS and panel state in agreement when the viewport or input device changes.
+    const media = window.matchMedia('(max-width: 767px), (hover: none), (pointer: coarse)');
+    const updateLayout = () => setTouchLayout(media.matches);
+    updateLayout();
+    media.addEventListener('change', updateLayout);
+    return () => media.removeEventListener('change', updateLayout);
+  }, []);
+
+  useEffect(() => {
+    // Close the menu on an outside click and remove the listener when it unmounts.
+    const outsideClick = (event: PointerEvent) => {
+      // Mobile panels stay open until the visitor explicitly closes them.
+      if (isTouchLayout()) {
+        return;
+      }
+
+      if (event.target instanceof Node && !root.current?.contains(event.target)) {
+        setOpenItem(null);
+        setMobileOpen(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', outsideClick);
+
+    return () => {
+      document.removeEventListener('pointerdown', outsideClick);
+    };
+  }, []);
+  // #endregion Closing panels and cleaning up event listeners
+
+  // Authors see setup messages; visitors do not see an empty navigation component.
+  if (!items.length && !editing) {
+    return null;
+  }
+
+  return (
+    <nav ref={root} id={id || undefined} aria-label="Main navigation"
+      className={`component dsi-mega-navigation mega-button-click ${styles}`} style={backgroundStyle}
+      onBlur={(event) => {
+        if (!isTouchLayout() && !event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          closePanel();
+        }
+      }}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+
+          if (isTouchLayout()) {
+            setOpenMobileItems([]);
+            setMobileOpen(false);
+            root.current?.querySelector<HTMLButtonElement>('.mega-mobile-toggle')?.focus();
+          } else if (openItem) {
+            closePanel(true);
+          } else {
+            setMobileOpen(false);
+            root.current?.querySelector<HTMLButtonElement>('.mega-mobile-toggle')?.focus();
+          }
+        }
+      }}>
+
+      {editing && data?.message &&
+        <p className="mega-editor-message">{data.message}</p>
+      }
+
+      {editing && !items.length &&
+        <p>Select a Mega Navigation datasource and add menu items.</p>
+      }
+
+      {/* #region Mobile menu control */}
+      <button type="button" className="mega-mobile-toggle" aria-expanded={mobileOpen} aria-controls={`${instanceId}-items`}
+        onClick={() => {
+          setMobileOpen(!mobileOpen);
+          setOpenMobileItems([]); closePanel();
+        }}>
+        {mobileOpen ? 'Close menu' : 'Menu'}
+      </button>
+
+      {/* #endregion Mobile menu control */}
+      {/* #region Dsi Mega Navigation Item - top-level links and panel controls */}
+      <ul id={`${instanceId}-items`} className={`mega-items${mobileOpen ? ' is-mobile-open' : ''}`}>
+        {items.map((item) => {
+          // Sitecore checkbox values can arrive as a boolean or as text.
+          const panelEnabled = item.enablePanel?.value === true || ['1', 'true'].includes(String(item.enablePanel?.value).toLowerCase());
+          const expanded = panelEnabled && (touchLayout ? openMobileItems.includes(item.id) : openItem === item.id);
+          const panelId = `${instanceId}-panel-${item.id}`;
+          const triggerId = `${instanceId}-trigger-${item.id}`;
+
+          // Desktop panels open by button click, never by hovering or moving the mouse away.
+          return <li key={item.id} className={`mega-item${expanded ? ' is-open' : ''}`}>
+            {panelEnabled ?
+              <button type="button" id={triggerId} className="mega-trigger mega-desktop-trigger"
+                ref={(element) => {
+                  if (element) {
+                    desktopTriggers.current.set(item.id, element);
+                  } else {
+                    desktopTriggers.current.delete(item.id);
+                  }
+                }}
+                aria-expanded={expanded} aria-controls={panelId}
+                onClick={() => setOpenItem(expanded ? null : item.id)}
+                onKeyDown={(event) => {
+                  if (event.key !== 'ArrowDown') {
+                    return;
+                  }
+                  event.preventDefault();
+                  setOpenItem(item.id);
+                  focusFirstPanelLink(panelId);
+                }}>
+                <Text field={itemLabel(item)} />
+                <span className="mega-chevron" aria-hidden="true" />
+              </button>
+              : <MenuLink item={item} />
+            }
+
+            {/* Touch users open the panel here, then follow the parent link inside it. */}
+            {panelEnabled &&
+              <button type="button" id={`${triggerId}-touch`} className="mega-trigger mega-touch-trigger"
+                ref={(element) => {
+                  if (element) {
+                    triggers.current.set(item.id, element);
+                  } else {
+                    triggers.current.delete(item.id);
+                  }
+                }}
+                aria-expanded={expanded} aria-controls={panelId}
+                onClick={() => openMobilePanel(item.id)}
+                onKeyDown={(event) => {
+                  if (event.key !== 'ArrowDown') {
+                    return;
+                  }
+
+                  event.preventDefault();
+                  openMobilePanel(item.id, false);
+                  // Wait for React to show the panel before focusing its first control.
+                  focusFirstPanelLink(panelId);
+                }}>
+
+                <Text field={itemLabel(item)} />
+                <span className="mega-chevron" aria-hidden="true" />
+              </button>
+            }
+
+            {panelEnabled &&
+              <div id={panelId} className="mega-panel" hidden={!expanded} aria-label={String(itemLabel(item).value)}>
+                <div className="mega-panel-heading">
+                  {/* News can open a panel headed Newsroom. An empty PanelTitle uses Title. */}
+                  <Text tag="h2" field={labelField(item.link, item.panelTitle, item.title)} />
+                  {/* <button type="button" className="mega-close" aria-label={`Close ${item.title?.value || 'menu'}`} onClick={() => closePanel(true)}>×</button> */}
+                </div>
+
+                {/* Empty URLs and # do not create a second, unusable link inside the panel. */}
+                {hasLink(item.link) && item.link!.value.href!.trim() !== '#' &&
+                  <Link field={item.link!} className="mega-parent-link">
+                    <Text field={itemLabel(item)} />
+                  </Link>
+                }
+
+                {/* #region Dsi Mega Navigation Column and Listing - panel content */}
+                {/* Both use a heading and links. Listing links come from selected pages. */}
+                <div className="mega-columns">
+                  {item.blocks.map((block) =>
+                    <section key={block.id} className={`mega-column mega-${block.kind}`}>
+                      {/* #region Column image and content - show only fields that are filled */}
+                      {block.kind === 'column' && block.image?.value?.src &&
+                        <SitecoreImage field={block.image} className="mega-column-image" />
+                      }
+
+                      {(hasText(block.title?.value) || hasLink(block.link)) &&
+                        <h3>
+                          {hasLink(block.link)
+                            ? <Link field={block.link!}><Text field={labelField(block.link, block.title)} /></Link>
+                            : <Text field={labelField(block.link, block.title)} />
+                          }
+                        </h3>
+                      }
+
+                      {block.kind === 'column' && block.content?.value &&
+                        <RichText field={block.content} className="mega-column-content" />
+                      }
+
+                      {block.kind === 'column' && hasLink(block.buttonLink) &&
+                        <Link field={block.buttonLink!} className="mega-column-button"><Text field={labelField(block.buttonLink)} /></Link>
+                      }
+                      {/* #endregion Column image and content */}
+
+                      {editing && block.message &&
+                        <p className="mega-editor-message">{block.message}
+                        </p>
+                      }
+
+                      {block.links.length > 0 && <ul className="mega-links">
+                        {block.links.map((link) =>
+                          <li key={link.id}><MenuLink item={link} /></li>)
+                        }
+                      </ul>}
+
+                      {hasLink(block.viewAllLink) &&
+                        <Link field={block.viewAllLink!} className="mega-view-all"><Text field={labelField(block.viewAllLink)} /></Link>
+                      }
+                    </section>)}
+                </div>
+
+                {/* #endregion Dsi Mega Navigation Column and Listing */}
+                {editing && !item.blocks.length &&
+                  <p>Add Column or Listing items below this menu item in Content Editor.</p>
+                }
+              </div>
+            }
+          </li>;
+        })
+        }
+      </ul>
+      {/* #endregion Dsi Mega Navigation Item */}
+    </nav>
+  );
+};
+// #endregion ButtonClick
