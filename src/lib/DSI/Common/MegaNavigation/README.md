@@ -1,5 +1,33 @@
 # Mega Navigation setup
 
+## Variants
+
+Default keeps the original button controls. AnchorHover uses anchors on mouse
+desktops: hover or focus opens the panel; clicking a real URL navigates normally.
+An empty URL becomes # and its click does not jump to the top of the page.
+
+On small screens and touch devices, AnchorHover uses a button to open each panel.
+The parent link appears inside the panel only when it has a URL other than #.
+Items without panels remain direct anchors. No new fields or parameters are needed.
+Both variants are kept in separate regions in the component for easier reading.
+
+In the site's Presentation / Headless Variants / DsiMegaNavigationComponent,
+add a variant definition named AnchorHover alongside Default, using the same
+variant setup as your existing components. The name must match the exported function.
+Select AnchorHover in Page Builder. Keep the existing datasource and rendering query.
+
+## Text fallbacks
+
+Spaces-only values count as empty. Parent labels use Title, then PanelTitle,
+then Link text, then "Link". Panel headings prefer PanelTitle, then Title,
+then Link text, then "Link". Mobile parent links use the parent label.
+Child links and column headings use Title, then Link text, then "Link".
+Columns with no heading title and no heading URL do not gain an empty heading.
+ButtonLink and ViewAllLink use their own link text or "Link"; no URL means no link.
+Listing pages use their page Title, item name, then "Link".
+
+## Datasource
+
 Add `DsiMegaNavigationComponent` to a page or partial design. Set its datasource
 template to `/sitecore/templates/Feature/DSI/Core UI/Dsi Mega Navigation`.
 Copy `rendering.graphql` into the rendering's Component GraphQL Query field.

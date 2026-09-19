@@ -52,3 +52,27 @@
     .mega-columns { grid-template-columns: 1fr; }
   }
 }
+
+// #region AnchorHover - desktop
+// On desktops with a mouse, parent anchors navigate and hover opens their panels.
+// Hide the touch controls so each parent has only one visible keyboard stop.
+.dsi-mega-navigation.mega-anchor-hover {
+  .mega-touch-trigger, .mega-parent-link { display: none; }
+
+  // #region AnchorHover - mobile and touch
+  // Small screens and touch devices use buttons to open panels, even on wide tablets.
+  // The real parent-page link is shown inside the panel instead of using a two-tap link.
+  @media (max-width: 767px), (hover: none), (pointer: coarse) {
+    .mega-desktop-trigger { display: none; }
+    .mega-touch-trigger { display: flex; }
+    .mega-parent-link { display: block; margin-bottom: 1rem; }
+    .mega-mobile-toggle { display: block; padding: .75rem 1rem; border: 1px solid var(--mega-border); background: var(--mega-background); }
+    .mega-items { display: none; }
+    .mega-items.is-mobile-open { display: block; }
+    .mega-trigger { width: 100%; justify-content: space-between; }
+    .mega-panel { position: static; padding: 1rem; max-height: none; box-shadow: none; }
+    .mega-columns { grid-template-columns: 1fr; }
+  }
+  // #endregion AnchorHover - mobile and touch
+}
+// #endregion AnchorHover - desktop

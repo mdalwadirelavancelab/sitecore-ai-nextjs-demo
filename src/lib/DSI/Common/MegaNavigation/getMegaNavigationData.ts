@@ -210,8 +210,8 @@ export async function getMegaNavigationData(
 
         return {
           id: item.id,
-          title: title?.value ? title : { value: item.name },
-          link: { value: { href: item.url!.url, text: String(title?.value || item.name) } },
+          title: String(title?.value || '').trim() ? title : { value: item.name?.trim() || 'Link' },
+          link: { value: { href: item.url!.url, text: String(title?.value || '').trim() || item.name?.trim() || 'Link' } },
           image: field<ImageField>(item, 'Image'),
           description: description?.value ? description : undefined,
           content: description?.value ? undefined : field<Field<string>>(item, 'Content'),
