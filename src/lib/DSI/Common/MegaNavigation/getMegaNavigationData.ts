@@ -69,6 +69,8 @@ export async function getMegaNavigationData(
   // Menus may be inside wrappers or partial designs, so check nested placeholders too.
   const visit = (value: unknown) => {
     if (Array.isArray(value)) {
+      // Check each entry in this list. For example, a placeholder may contain a wrapper and a menu.
+      // visit checks inside each entry too, so a menu inside the wrapper is also found.
       value.forEach(visit); return;
     }
 
@@ -79,6 +81,8 @@ export async function getMegaNavigationData(
     if (value.componentName === 'DsiMegaNavigationComponent') {
       renderings.push(value);
     }
+    // Check each property for more nested items. For example, a wrapper's placeholders may hold a menu.
+    // This only checks data already in memory; there is no CMS request to wait for here.
     Object.values(value).forEach(visit);
   };
 
@@ -99,7 +103,10 @@ export async function getMegaNavigationData(
     const pending = (async () => {
       const items: CmsItem[] = [];
       let after = '';
-      // Read the next batch until all children are included, keeping Sitecore's order.
+      // Make the first CMS request, then keep requesting batches while more children are available.
+      // Example: 45 children need three requests: 20 items, another 20, then the last 5.
+      // await waits for each response. Its endCursor tells the next request where to start.
+      // When hasNext is false, break stops this loop, even though the bottom says while (true).
       do {
         // Get the items directly below the item identified by id.
         // Example: for the main menu, get News and About Us; for a column, get its links.
@@ -184,9 +191,14 @@ export async function getMegaNavigationData(
       const pages: CmsItem[] = [];
 
       if (mode === 'manual') {
+        // Clean each selected ID and remove empty entries, then remove duplicates without changing order.
+        // Example: " A | B | A | " becomes ["A", "B"].
         const ids = [...new Set((response.item?.selected?.value || '').split('|').map((id) => id.trim()).filter(Boolean))];
 
-        // Preserve the author's selection order and skip pages missing in this language.
+        // Load one selected page at a time and wait for its CMS response before loading the next.
+        // Example: with A, B, C selected and ItemCount = 2, stop after two usable pages are found.
+        // If B is missing or has no URL, try C instead. Keep the author's selection order.
+        // for...of supports await and break; forEach would not wait for these requests to finish.
         for (const id of ids) {
           if (pages.length >= limit)
             break;
@@ -211,6 +223,8 @@ export async function getMegaNavigationData(
           .sort((a, b) => updatedTime(b) - updatedTime(a) || 0).slice(0, limit));
       }
 
+      // Turn each loaded CMS page into the fields the menu displays. No more requests are made here.
+      // Example: a News page becomes one listing entry with its title, image, text and page link.
       return pages.map((item) => {
         const title = field<TextField>(item, 'Title');
         const description = field<TextField>(item, 'Description');
@@ -231,6 +245,9 @@ export async function getMegaNavigationData(
   };
   // #endregion Listing
 
+  // Prepare each Mega Navigation component found on this page, one at a time.
+  // Example: a header menu and a footer menu each need data from their own datasource.
+  // Wait for all the child requests inside this loop before returning the completed page.
   for (const rendering of renderings) {
     const fields = isRecord(rendering.fields) ? rendering.fields : {};
     const data = isRecord(fields.data) ? fields.data : {};
@@ -249,7 +266,9 @@ export async function getMegaNavigationData(
 
     const items: MegaItem[] = [];
 
-    // Ignore unrelated child templates. An unchecked item needs only its direct link.
+    // Read the top-level menu items in CMS order. Example: About Us, News, then Careers.
+    // For each item, wait for its panel content to load before moving to the next item.
+    // Skip other templates. If EnablePanel is unchecked, keep the item as a direct link.
     for (const menu of await readChildren(datasource.id)) {
 
       if (menu.template.name !== 'Dsi Mega Navigation Item') {
@@ -260,6 +279,10 @@ export async function getMegaNavigationData(
       const enablePanel = field<Field<boolean | string>>(menu, 'EnablePanel');
 
       if (['true', '1'].includes(String(enablePanel?.value).toLowerCase())) {
+        // Build each block inside this menu panel, keeping its CMS order.
+        // Example: News can contain a column of links followed by a Latest News listing.
+        // A column loads its child links; a listing loads its selected or automatic pages.
+        // Wait for that block's data before adding the next block.
         for (const block of await readChildren(menu.id)) {
           if (block.template.name === 'Dsi Mega Navigation Column') {
             blocks.push({
@@ -267,6 +290,8 @@ export async function getMegaNavigationData(
               // A column can show content and a button even when it has no child links.
               content: field<Field<string>>(block, 'Content'),
               buttonLink: field<LinkField>(block, 'ButtonLink'),
+              // Keep only link items, then turn each into menu fields. Example: ignore a folder,
+              // but include its sibling Contact link. These array steps make no CMS requests.
               kind: 'column', links: (await readChildren(block.id))
                 .filter((link) => link.template.name === 'Dsi Mega Navigation Link').map(toLink)
             });
