@@ -61,10 +61,14 @@ test('AnchorHover keeps real links navigable and opens on focus; touch has an in
   assert.equal(view.find('mega-touch-trigger')[0].type, 'button');
   assert.equal(view.find('mega-parent-link')[0].props.href, '/about');
   view.find('mega-touch-trigger')[0].props.onClick();
-  assert.deepEqual(view.changes.pop(), [0, 'about']);
+  const [stateIndex, toggle] = view.changes.pop();
+  assert.equal(stateIndex, 3);
+  assert.deepEqual(toggle([]), ['about']);
+  assert.deepEqual(toggle(['career']), ['career', 'about']);
+  assert.deepEqual(toggle(['career', 'about']), ['career']);
   const expanded = setup('AnchorHover', [menu()], 'about');
   expanded.find('mega-touch-trigger')[0].props.onClick();
-  assert.deepEqual(expanded.changes.pop(), [0, null]);
+  assert.deepEqual(expanded.changes.pop()[1](['about']), []);
 });
 
 test('Empty and hash URLs never jump and never create an inner parent link', () => {

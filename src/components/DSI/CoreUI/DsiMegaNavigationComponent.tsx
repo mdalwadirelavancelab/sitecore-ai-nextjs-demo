@@ -80,7 +80,9 @@ export const Default = ({ params = {}, fields }: Props) => {
 
   // #region Closing panels and cleaning up event listeners
   const cancelClose = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+    }
     closeTimer.current = null;
   };
 
@@ -117,14 +119,18 @@ export const Default = ({ params = {}, fields }: Props) => {
   // #endregion Closing panels and cleaning up event listeners
 
   // Authors see setup messages; visitors do not see an empty navigation component.
-  if (!items.length && !editing) return null;
+  if (!items.length && !editing) {
+    return null;
+  }
 
   return (
     <nav ref={root} id={id || undefined}
       className={`component dsi-mega-navigation ${styles}`} style={backgroundStyle}
       aria-label="Main navigation"
       onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) closePanel();
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          closePanel();
+        }
       }}
       onKeyDown={(event) => {
         if (event.key === 'Escape') {
@@ -172,13 +178,16 @@ export const Default = ({ params = {}, fields }: Props) => {
             }}
 
             onPointerLeave={(event) => {
-              if (event.pointerType !== 'mouse' || editing)
+              if (event.pointerType !== 'mouse' || editing) {
                 return;
+              }
 
               cancelClose();
               closeTimer.current = setTimeout(() => {
                 // Do not hide a panel while a keyboard user is inside it.
-                if (!root.current?.querySelector(`#${CSS.escape(panelId)}`)?.contains(document.activeElement)) setOpenItem(null);
+                if (!root.current?.querySelector(`#${CSS.escape(panelId)}`)?.contains(document.activeElement)) {
+                  setOpenItem(null);
+                }
               }, 200);
             }}>
 
@@ -194,8 +203,9 @@ export const Default = ({ params = {}, fields }: Props) => {
                 aria-expanded={expanded} aria-controls={panelId}
                 onClick={() => { cancelClose(); setOpenItem(expanded ? null : item.id); }}
                 onKeyDown={(event) => {
-                  if (event.key !== 'ArrowDown')
+                  if (event.key !== 'ArrowDown') {
                     return;
+                  }
 
                   event.preventDefault();
                   setOpenItem(item.id);
@@ -292,6 +302,22 @@ export const AnchorHover = ({ params = {}, fields }: Props) => {
   const desktopTriggers = useRef(new Map<string, HTMLAnchorElement>());
   const [openItem, setOpenItem] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [touchLayout, setTouchLayout] = useState(false);
+  const [openMobileItems, setOpenMobileItems] = useState<string[]>([]);
+  // Mobile panel behaviour
+  // true: On mobile, opening another panel keeps the already open panels open.
+  // false: On mobile, opening another panel closes the previously open panel.
+  const allowMultipleMobilePanels = true;
+  const isTouchLayout = () => window.matchMedia('(max-width: 767px), (hover: none), (pointer: coarse)').matches;
+  const openMobilePanel = (itemId: string, toggle = true) => {
+    cancelClose();
+    setOpenMobileItems((current) => {
+      if (toggle && current.includes(itemId)) {
+        return current.filter((id) => id !== itemId);
+      }
+      return allowMultipleMobilePanels ? Array.from(new Set([...current, itemId])) : [itemId];
+    });
+  };
   const data = fields?.megaNavigation;
   const items = data?.items ?? [];
   // #endregion Menu state and element references
@@ -322,8 +348,22 @@ export const AnchorHover = ({ params = {}, fields }: Props) => {
   };
 
   useEffect(() => {
+    // Keep CSS and panel state in agreement when the viewport or input device changes.
+    const media = window.matchMedia('(max-width: 767px), (hover: none), (pointer: coarse)');
+    const updateLayout = () => setTouchLayout(media.matches);
+    updateLayout();
+    media.addEventListener('change', updateLayout);
+    return () => media.removeEventListener('change', updateLayout);
+  }, []);
+
+  useEffect(() => {
     // Close the menu on an outside click and remove the listener when it unmounts.
     const outsideClick = (event: PointerEvent) => {
+      // Mobile panels stay open until the visitor explicitly closes them.
+      if (isTouchLayout()) {
+        return;
+      }
+
       if (event.target instanceof Node && !root.current?.contains(event.target)) {
         if (closeTimer.current) {
           clearTimeout(closeTimer.current);
@@ -345,19 +385,27 @@ export const AnchorHover = ({ params = {}, fields }: Props) => {
   // #endregion Closing panels and cleaning up event listeners
 
   // Authors see setup messages; visitors do not see an empty navigation component.
-  if (!items.length && !editing) return null;
+  if (!items.length && !editing) {
+    return null;
+  }
 
   return (
-    <nav ref={root} id={id || undefined}
+    <nav ref={root} id={id || undefined} aria-label="Main navigation"
       className={`component dsi-mega-navigation mega-anchor-hover ${styles}`} style={backgroundStyle}
-      aria-label="Main navigation"
       onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) closePanel();
+        if (!isTouchLayout() && !event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          closePanel();
+        }
       }}
       onKeyDown={(event) => {
         if (event.key === 'Escape') {
           event.preventDefault();
-          if (openItem) {
+
+          if (isTouchLayout()) {
+            setOpenMobileItems([]);
+            setMobileOpen(false);
+            root.current?.querySelector<HTMLButtonElement>('.mega-mobile-toggle')?.focus();
+          } else if (openItem) {
             closePanel(true);
           } else {
             setMobileOpen(false);
@@ -375,8 +423,11 @@ export const AnchorHover = ({ params = {}, fields }: Props) => {
       }
 
       {/* #region Mobile menu control */}
-      <button type="button" className="mega-mobile-toggle" aria-expanded={mobileOpen}
-        aria-controls={`${instanceId}-items`} onClick={() => { setMobileOpen(!mobileOpen); closePanel(); }}>
+      <button type="button" className="mega-mobile-toggle" aria-expanded={mobileOpen} aria-controls={`${instanceId}-items`}
+        onClick={() => {
+          setMobileOpen(!mobileOpen);
+          setOpenMobileItems([]); closePanel();
+        }}>
         {mobileOpen ? 'Close menu' : 'Menu'}
       </button>
 
@@ -386,7 +437,7 @@ export const AnchorHover = ({ params = {}, fields }: Props) => {
         {items.map((item) => {
           // Sitecore checkbox values can arrive as a boolean or as text.
           const panelEnabled = item.enablePanel?.value === true || ['1', 'true'].includes(String(item.enablePanel?.value).toLowerCase());
-          const expanded = panelEnabled && openItem === item.id;
+          const expanded = panelEnabled && (touchLayout ? openMobileItems.includes(item.id) : openItem === item.id);
           const panelId = `${instanceId}-panel-${item.id}`;
           const triggerId = `${instanceId}-trigger-${item.id}`;
 
@@ -400,42 +451,55 @@ export const AnchorHover = ({ params = {}, fields }: Props) => {
             }}
 
             onPointerLeave={(event) => {
-              if (event.pointerType !== 'mouse' || editing)
+              if (event.pointerType !== 'mouse' || editing || isTouchLayout()) {
                 return;
+              }
 
               cancelClose();
               const menuItem = event.currentTarget;
               closeTimer.current = setTimeout(() => {
                 // Keep the panel open while its parent or content has keyboard focus.
-                if (!menuItem.contains(document.activeElement)) setOpenItem(null);
+                if (!menuItem.contains(document.activeElement)) {
+                  setOpenItem(null);
+                }
               }, 200);
             }}>
 
             {/* Desktop parents are always anchors. A missing URL uses # without jumping. */}
-            <Link
+            <Link id={triggerId} className={`mega-trigger ${panelEnabled ? 'mega-desktop-trigger' : ''}`}
               field={{ ...item.link, value: { ...item.link?.value, href: item.link?.value?.href?.trim() || '#' } }}
-              id={triggerId}
-              className={`mega-trigger ${panelEnabled ? 'mega-desktop-trigger' : ''}`}
               ref={(element) => {
-                if (element) desktopTriggers.current.set(item.id, element);
-                else desktopTriggers.current.delete(item.id);
+                if (element) {
+                  desktopTriggers.current.set(item.id, element);
+                } else {
+                  desktopTriggers.current.delete(item.id);
+                }
               }}
               aria-expanded={panelEnabled ? expanded : undefined}
               aria-controls={panelEnabled ? panelId : undefined}
-              onFocus={() => { cancelClose(); setOpenItem(panelEnabled ? item.id : null); }}
+              onFocus={() => {
+                cancelClose();
+                setOpenItem(panelEnabled ? item.id : null);
+              }}
               onClick={(event) => {
                 if (!item.link?.value?.href?.trim() || item.link.value.href.trim() === '#') {
                   event.preventDefault();
                 }
               }}
               onKeyDown={(event) => {
-                if (event.key !== 'ArrowDown' || !panelEnabled) return;
+                if (event.key !== 'ArrowDown' || !panelEnabled) {
+                  return;
+                }
                 event.preventDefault();
                 setOpenItem(item.id);
                 focusFirstPanelLink(panelId);
               }}>
+
               <Text field={itemLabel(item)} />
-              {panelEnabled && <span className="mega-chevron" aria-hidden="true" />}
+
+              {panelEnabled &&
+                <span className="mega-chevron" aria-hidden="true" />
+              }
             </Link>
 
             {/* Touch users open the panel here, then follow the parent link inside it. */}
@@ -449,13 +513,14 @@ export const AnchorHover = ({ params = {}, fields }: Props) => {
                   }
                 }}
                 aria-expanded={expanded} aria-controls={panelId}
-                onClick={() => { cancelClose(); setOpenItem(expanded ? null : item.id); }}
+                onClick={() => openMobilePanel(item.id)}
                 onKeyDown={(event) => {
-                  if (event.key !== 'ArrowDown')
+                  if (event.key !== 'ArrowDown') {
                     return;
+                  }
 
                   event.preventDefault();
-                  setOpenItem(item.id);
+                  openMobilePanel(item.id, false);
                   // Wait for React to show the panel before focusing its first control.
                   focusFirstPanelLink(panelId);
                 }}>
@@ -489,6 +554,7 @@ export const AnchorHover = ({ params = {}, fields }: Props) => {
                       {block.kind === 'column' && block.image?.value?.src &&
                         <SitecoreImage field={block.image} className="mega-column-image" />
                       }
+
                       {(hasText(block.title?.value) || hasLink(block.link)) &&
                         <h3>
                           {hasLink(block.link)
@@ -511,6 +577,7 @@ export const AnchorHover = ({ params = {}, fields }: Props) => {
                         <p className="mega-editor-message">{block.message}
                         </p>
                       }
+
                       {block.links.length > 0 && <ul className="mega-links">
                         {block.links.map((link) =>
                           <li key={link.id}><MenuLink item={link} /></li>)

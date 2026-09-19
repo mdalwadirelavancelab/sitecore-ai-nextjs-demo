@@ -71,8 +71,11 @@ export async function getMegaNavigationData(
     if (Array.isArray(value)) {
       value.forEach(visit); return;
     }
-    if (!isRecord(value))
+
+    if (!isRecord(value)) {
       return;
+    }
+
     if (value.componentName === 'DsiMegaNavigationComponent') {
       renderings.push(value);
     }
@@ -81,15 +84,17 @@ export async function getMegaNavigationData(
 
   visit(result.layout.sitecore.route?.placeholders);
 
-  if (!renderings.length)
+  if (!renderings.length) {
     return page;
+  }
 
   // Reuse child data within this page request when the same menu is used twice.
   const childrenCache = new Map<string, Promise<CmsItem[]>>();
   const readChildren = (id: string): Promise<CmsItem[]> => {
 
-    if (childrenCache.has(id))
+    if (childrenCache.has(id)) {
       return childrenCache.get(id)!;
+    }
 
     const pending = (async () => {
       const items: CmsItem[] = [];
@@ -118,14 +123,16 @@ export async function getMegaNavigationData(
             }
           );
 
-        if (!response.item)
+        if (!response.item) {
           throw new Error(`Mega Navigation datasource item could not be read: ${id}`);
+        }
 
         const connection = response.item.children;
         items.push(...connection.results);
 
-        if (!connection.pageInfo.hasNext)
+        if (!connection.pageInfo.hasNext) {
           break;
+        }
 
         if (!connection.pageInfo.endCursor || connection.pageInfo.endCursor === after) {
           throw new Error('Mega Navigation returned an invalid pagination cursor.');
@@ -245,8 +252,9 @@ export async function getMegaNavigationData(
     // Ignore unrelated child templates. An unchecked item needs only its direct link.
     for (const menu of await readChildren(datasource.id)) {
 
-      if (menu.template.name !== 'Dsi Mega Navigation Item')
+      if (menu.template.name !== 'Dsi Mega Navigation Item') {
         continue;
+      }
 
       const blocks: MegaBlock[] = [];
       const enablePanel = field<Field<boolean | string>>(menu, 'EnablePanel');

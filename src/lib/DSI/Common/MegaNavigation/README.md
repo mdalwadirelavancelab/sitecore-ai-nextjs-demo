@@ -99,3 +99,13 @@ ViewAllLink remains the listing's separate navigation link.
 
 Validate the rendering query against your CMS, then check published and editing
 pages, including mouse, keyboard and mobile interactions, before release.
+
+### AnchorHover mobile panels
+
+Visitors can keep several panels open. Tapping a parent again closes only that panel.
+Outside taps and moving focus away do not close mobile panels. Close menu or Escape
+closes the menu and its panels. Desktop hover behaviour is unchanged.
+
+If a future site needs only one mobile panel open at a time, set
+`allowMultipleMobilePanels` to `false` in the AnchorHover region. The existing
+state update then replaces the previous panel when another parent is tapped.
